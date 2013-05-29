@@ -127,6 +127,19 @@ public:
 
 		return os;
 	}
+	int numberOfRevealedSpaces()
+	{
+		int count = 0;
+		for(uint x = 0; x < fieldWidth; ++x)
+			for(uint y = 0; y < fieldHeight; ++y)
+				if(revealedSpaces[x][y])
+					++count;
+		return count;
+	}
+	int numberOfUnrevealedSpaces()
+	{
+		return (int)fieldHeight * (int)fieldWidth - numberOfRevealedSpaces();
+	}
 
 private:
 	Field();
