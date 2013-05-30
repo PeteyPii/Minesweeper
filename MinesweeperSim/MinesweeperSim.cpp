@@ -110,6 +110,12 @@ public:
 		if(firstSpotZero)
 			revealSpot(zeroAdjacentMinesLocationX, zeroAdjacentMinesLocationY);
 	}
+	void markSpot(uint x, uint y)
+	{
+		if(x >= 0 && x < fieldWidth && y >= 0 && y < fieldHeight)	// not out of bounds
+			if(!revealedSpaces[x][y])								// space isn't already revealed
+				marked[x][y] = !marked[x][y];						// change whether or not it's marked
+	}
 	friend ostream& operator<<(ostream& os, const Field& field)
 	{
 		os << ' ';
