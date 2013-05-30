@@ -13,7 +13,9 @@ const unsigned char mineChar = 15,			// constant characters for outputting speci
 	hiddenChar = 176,
 	verticalDash = 186,
 	horizontalDash = 205;		
-
+const uint defaultFieldWidth = 30,
+	defaultFieldHeight = 16,
+	defaultNumberOfMines = 99;
 class Field
 {
 public:
@@ -27,6 +29,7 @@ public:
 
 	bool revealSpot(int locX, int locY)	// returns true when a mine is hit
 	{
+		marked[locX][locY] = false;
 		if(!revealedSpaces[(uint)locX][(uint)locY])
 		{
 			revealedSpaces[(uint)locX][(uint)locY] = true;
@@ -110,7 +113,7 @@ public:
 	friend ostream& operator<<(ostream& os, const Field& field)
 	{
 		os << ' ';
-		for(int x = 0; x < field.fieldWidth; ++x)
+		for(uint x = 0; x < field.fieldWidth; ++x)
 		{
 			if(x % 5 == 0)
 				os << verticalDash;
@@ -167,8 +170,67 @@ private:
 
 int main()
 {
-	Field field(99, 30, 16, 15, 8);
+	uint fieldWidth = defaultFieldWidth, fieldHeight = defaultFieldHeight, numberOfMines = defaultNumberOfMines;
+	cout << "Enter field width (default is " << defaultFieldWidth << "): " << endl;
+	cin >> fieldWidth;
+	cout << "Enter field height (default is " << defaultFieldHeight << "): " << endl;
+	cin >> fieldHeight;
+	cout << "Enter the number of mines (default is " << defaultNumberOfMines << "): " << endl;
+	cin >> numberOfMines;
+
+	Field field(0, fieldWidth, fieldHeight);
+	bool firstMove = true, gameOver = false, victory = false;
+
+	while(!gameOver)
+	{
+		cout << endl << field << endl;
+
+		bool correctInput = false;
+		while(!correctInput)
+		{
+			char command;
+			uint x, y;
+			cout << "Enter a command (ACTION[r,m], X[0 - " << fieldWidth - 1 << "], Y[0 - " << fieldHeight - 1 << "]): " << endl;
+			cin >> command >> x >> y;
+
+			if((command == 'r' || command == 'R' || command == 'm' || command == 'M') && (x >= 0 && x < fieldWidth) && (y >= 0 && y < fieldHeight))	// valid input
+			{
+				correctInput = true;
+
+				if(command == 'r' || command == 'R')
+				{
+					if(firstMove)
+					{
+						field = Field(numberOfMines, fieldWidth, fieldHeight, x, y);
+						firstMove = false;
+					}
+					else if(field.revealSpot(x, y))
+					{
+						gameOver = true;
+						victory = false;
+					}
+					else
+					{
+						if(field.numberOfUnrevealedSpaces() == numberOfMines)
+						{
+							gameOver = true;
+							victory = true;
+						}
+					}
+				}
+				else if(command == 'm' || command == 'M')
+				{
+					field.markSpot(x, y);
+				}
+			}
+		}
+	}
+
 	cout << field << endl;
+	if(victory)
+		cout << "Congratulations, you won!" << endl;
+	else
+		cout << "Game over! You revealed a mine, try again." << endl;
 
 	system("pause");
 
