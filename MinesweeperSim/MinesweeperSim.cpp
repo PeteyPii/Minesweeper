@@ -109,8 +109,22 @@ public:
 	}
 	friend ostream& operator<<(ostream& os, const Field& field)
 	{
+		os << ' ';
+		for(int x = 0; x < field.fieldWidth; ++x)
+		{
+			if(x % 5 == 0)
+				os << verticalDash;
+			else
+				os << ' ';
+		}
+		os << endl;
 		for(uint y = 0; y < field.fieldHeight; ++y)
 		{
+			if(y % 5 == 0)
+				os << horizontalDash;
+			else
+				os << ' ';
+
 			for(uint x = 0; x < field.fieldWidth; ++x)
 			{
 				if(field.revealedSpaces[x][y])
@@ -128,7 +142,7 @@ public:
 						os << hiddenChar;
 				}
 			}
-			cout << endl;
+			os << endl;
 		}
 
 		return os;
