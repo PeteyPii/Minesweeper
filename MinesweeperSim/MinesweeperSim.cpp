@@ -73,18 +73,21 @@ public:
 				int randX = random() % fieldWidth;
 				int randY = random() % fieldHeight;
 
-				if(firstSpotZero)
+				if(!mines[(uint)randX][(uint)randY])
 				{
-					if((randX - zeroAdjacentMinesLocationX < -1 || randX - zeroAdjacentMinesLocationX > 1) || (randY - zeroAdjacentMinesLocationY < -1 || randY - zeroAdjacentMinesLocationY > 1))
+					if(firstSpotZero)
+					{
+						if((randX - zeroAdjacentMinesLocationX < -1 || randX - zeroAdjacentMinesLocationX > 1) || (randY - zeroAdjacentMinesLocationY < -1 || randY - zeroAdjacentMinesLocationY > 1))
+						{
+							mines[(uint)randX][(uint)randY] = true;
+							minePlaced = true;
+						}
+					}
+					else
 					{
 						mines[(uint)randX][(uint)randY] = true;
 						minePlaced = true;
 					}
-				}
-				else
-				{
-					mines[(uint)randX][(uint)randY] = true;
-					minePlaced = true;
 				}
 			}
 		}
