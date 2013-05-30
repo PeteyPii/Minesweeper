@@ -7,8 +7,12 @@
 MTRand_int32 random((unsigned long)time(0));
 
 using namespace std;
-typedef unsigned int uint;											// typedef for faster typing
-const char mineChar = 15, markedChar = 33, hiddenChar = 176;		// constant characters for outputting special squares
+typedef unsigned int uint;					// typedef for faster typing
+const unsigned char mineChar = 15,			// constant characters for outputting special squares
+	markedChar = 33, 
+	hiddenChar = 176,
+	verticalDash = 186,
+	horizontalDash = 205;		
 
 class Field
 {
@@ -42,6 +46,8 @@ public:
 						}
 				}
 		}
+
+		return false;
 	}
 	Field(int numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdjacentMinesLocationX = -1, int zeroAdjacentMinesLocationY = -1)
 		: mines(fieldWidth, vector<bool>(fieldHeight, false)),
