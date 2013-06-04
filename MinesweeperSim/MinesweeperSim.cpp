@@ -16,6 +16,7 @@ const unsigned char mineChar = 15,			// constant characters for outputting speci
 const uint defaultFieldWidth = 30,
 	defaultFieldHeight = 16,
 	defaultNumberOfMines = 99;
+
 class Field
 {
 public:
@@ -30,7 +31,7 @@ public:
 	bool revealSpot(int locX, int locY)	// returns true when a mine is hit
 	{
 		marked[locX][locY] = false;
-		if(!revealedSpaces[(uint)locX][(uint)locY])
+		if(!revealedSpaces[(uint)locX][(uint)locY] && !marked[locX][locY])
 		{
 			revealedSpaces[(uint)locX][(uint)locY] = true;
 
@@ -65,7 +66,7 @@ public:
 		if(zeroAdjacentMinesLocationX != -1 && zeroAdjacentMinesLocationY != -1)
 			firstSpotZero = true;
 
-		for(int count = 0; count <= numberOfMines; ++count)
+		for(int count = 0; count < numberOfMines; ++count)
 		{
 			bool minePlaced = false;
 			while(!minePlaced)
