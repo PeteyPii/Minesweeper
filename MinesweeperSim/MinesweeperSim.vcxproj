@@ -76,9 +76,11 @@
   <ItemGroup>
     <ClCompile Include="MinesweeperSim.cpp" />
     <ClCompile Include="mtrand.cpp" />
+    <ClCompile Include="StreamInput.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mtrand.h" />
+    <ClInclude Include="StreamInput.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -21,9 +21,15 @@
     <ClCompile Include="mtrand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StreamInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mtrand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StreamInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

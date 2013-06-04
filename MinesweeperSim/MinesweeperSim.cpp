@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "mtrand.h"
+#include "StreamInput.h"
 
 MTRand_int32 random((unsigned long)time(0));
 
@@ -181,11 +182,15 @@ private:
 int main()
 {
 	uint fieldWidth = defaultFieldWidth, fieldHeight = defaultFieldHeight, numberOfMines = defaultNumberOfMines;
-	cout << "Enter field width (default is " << defaultFieldWidth << "): " << endl;
-	cin >> fieldWidth;
-	cout << "Enter field height (default is " << defaultFieldHeight << "): " << endl;
+	stringstream ssWidthPrompt, ssHeightPrompt, ssMineNumberprompt;
+	ssWidthPrompt << "Enter field width (default is " << defaultFieldWidth << "): " << endl;
+	ssHeightPrompt << "Enter field height (default is " << defaultFieldHeight << "): " << endl;
+	ssMineNumberPrompt << "Enter the number of mines (default is " << defaultNumberOfMines << "): " << endl;
+	//cout << ;
+	fieldWidth = (uint)getInt("Please enter the field width: ", cin, cout);
+	cout << 
 	cin >> fieldHeight;
-	cout << "Enter the number of mines (default is " << defaultNumberOfMines << "): " << endl;
+	cout 
 	cin >> numberOfMines;
 
 	Field field(0, fieldWidth, fieldHeight);
