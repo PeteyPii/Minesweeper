@@ -167,9 +167,17 @@ public:
 				if(field.revealedSpaces[x][y])
 				{
 					if(field.mines[x][y])
+					{
 						os << mineChar;
+					}
+					else if(field.numberOfNearbyMines[x][y] == 0)
+					{
+						os << ' ';
+					}
 					else
+					{
 						os << field.numberOfNearbyMines[x][y];
+					}
 				}
 				else
 				{
