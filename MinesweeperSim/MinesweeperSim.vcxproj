@@ -74,11 +74,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Field.cpp" />
+    <ClCompile Include="Globals.cpp" />
     <ClCompile Include="MinesweeperSim.cpp" />
     <ClCompile Include="mtrand.cpp" />
     <ClCompile Include="StreamInput.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Field.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="mtrand.h" />
     <ClInclude Include="StreamInput.h" />
   </ItemGroup>
