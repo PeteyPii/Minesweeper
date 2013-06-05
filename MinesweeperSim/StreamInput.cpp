@@ -4,7 +4,7 @@
 
 using namespace std;
 
-double getDouble(std::string prompt, std::istream& is, std::ostream& os)
+double getDouble(const std::string& prompt, std::istream& is, std::ostream& os)
 {
 	double returnValue;
 	bool validInput = false;
@@ -26,7 +26,7 @@ double getDouble(std::string prompt, std::istream& is, std::ostream& os)
 	}
 	return returnValue;
 }
-int getInt(std::string prompt, std::istream& is, std::ostream& os)
+int getInt(const string& prompt, istream& is, ostream& os)
 {
 	int returnValue;
 	bool validInput = false;
@@ -48,7 +48,7 @@ int getInt(std::string prompt, std::istream& is, std::ostream& os)
 	}
 	return returnValue;
 }
-unsigned int getUint(std::string prompt, std::istream& is, std::ostream& os)
+unsigned int getUint(const string& prompt, istream& is, ostream& os)
 {
 	unsigned int returnValue;
 	bool validInput = false;
@@ -70,11 +70,17 @@ unsigned int getUint(std::string prompt, std::istream& is, std::ostream& os)
 	}
 	return returnValue;
 }
-std::string getString(std::string prompt, std::istream& is, std::ostream& os)
+string getString(const string& prompt, istream& is, ostream& os, bool wholeLine)
 {
-	return ;
+	os << prompt;
+	string returnValue;
+	if(wholeLine)
+		getline(is, returnValue);
+	else
+		is >> returnValue;
+	return returnValue;
 }
-char getChar(std::string prompt, std::istream& is, std::ostream& os, bool caseSensitive)
+char getChar(const string& prompt, istream& is, ostream& os, bool caseSensitive)
 {
 	char returnValue;
 	bool validInput = false;
@@ -91,7 +97,7 @@ char getChar(std::string prompt, std::istream& is, std::ostream& os, bool caseSe
 		}
 		else
 		{
-			if(!caseSensitive && (returnValue >= 65 || returnValue <= 90))	// case insensitive and a captial letter input
+			if(!caseSensitive && returnValue >= 65 && returnValue <= 90)	// case insensitive and a capital letter input
 				returnValue += 32;
 
 			validInput = true;

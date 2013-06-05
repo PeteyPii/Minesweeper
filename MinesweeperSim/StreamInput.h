@@ -3,8 +3,8 @@
 #include <string>
 #include <iostream>
 
-double getDouble(std::string prompt, std::istream& is, std::ostream& os);
-int getInt(std::string prompt, std::istream& is, std::ostream& os);
-unsigned int getUint(std::string prompt, std::istream& is, std::ostream& os);
-std::string getString(std::string prompt, std::istream& is, std::ostream& os);
-char getChar(std::string prompt, std::istream& is, std::ostream& os, bool caseSensitive = true);	// if case insesitive, outputs lowercase
+double getDouble(const std::string& prompt, std::istream& is, std::ostream& os);
+int getInt(const std::string& prompt, std::istream& is, std::ostream& os);
+unsigned int getUint(const std::string& prompt, std::istream& is, std::ostream& os);
+std::string getString(const std::string& prompt, std::istream& is, std::ostream& os, bool wholeLine = false);
+char getChar(const std::string& prompt, std::istream& is, std::ostream& os, bool caseSensitive = true);	// if case insensitive, outputs lowercase

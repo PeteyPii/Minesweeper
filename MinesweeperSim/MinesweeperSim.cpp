@@ -1,5 +1,6 @@
 #include <ctime>
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 #include "mtrand.h"
@@ -10,10 +11,11 @@ MTRand_int32 random((unsigned long)time(0));
 using namespace std;
 typedef unsigned int uint;					// typedef for faster typing
 const unsigned char mineChar = 15,			// constant characters for outputting special squares
-	markedChar = 33, 
-	hiddenChar = 176,
+	markedChar = 4, 
+	hiddenChar = 35,
 	verticalDash = 186,
-	horizontalDash = 205;		
+	horizontalDash = 205,
+	marginSpacer = 249;		
 const uint defaultFieldWidth = 30,
 	defaultFieldHeight = 16,
 	defaultNumberOfMines = 99;
@@ -26,7 +28,7 @@ public:
 	vector<vector<bool> > marked;			// true for a space marked as a present mine
 	vector<vector<int> > numberOfNearbyMines;
 
-	int numberOfMines;
+	uint numberOfMines;
 	uint fieldWidth, fieldHeight;
 
 	bool revealSpot(int locX, int locY)	// returns true when a mine is hit
@@ -54,7 +56,7 @@ public:
 
 		return false;
 	}
-	Field(int numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdjacentMinesLocationX = -1, int zeroAdjacentMinesLocationY = -1)
+	Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdjacentMinesLocationX = -1, int zeroAdjacentMinesLocationY = -1)
 		: mines(fieldWidth, vector<bool>(fieldHeight, false)),
 		revealedSpaces(fieldWidth, vector<bool>(fieldHeight, false)),
 		marked(fieldWidth, vector<bool>(fieldHeight, false)),
@@ -67,7 +69,13 @@ public:
 		if(zeroAdjacentMinesLocationX != -1 && zeroAdjacentMinesLocationY != -1)
 			firstSpotZero = true;
 
-		for(int count = 0; count < numberOfMines; ++count)
+		if(numberOfMines > fieldHeight * fieldWidth - 9 * (int)firstSpotZero)
+			this->numberOfMines = fieldWidth * fieldHeight - 9 * (int)firstSpotZero;
+
+		if(this->numberOfMines < 0)
+			this->numberOfMines = 0;
+
+		for(uint count = 0; count < numberOfMines; ++count)
 		{
 			bool minePlaced = false;
 			while(!minePlaced)
@@ -121,7 +129,7 @@ public:
 			if(!revealedSpaces[x][y])								// space isn't already revealed
 				marked[x][y] = !marked[x][y];						// change whether or not it's marked
 	}
-	friend ostream& operator<<(ostream& os, const Field& field)
+	friend ostream& operator<<(ostream& os, const Field& field)		// output field
 	{
 		os << ' ';
 		for(uint x = 0; x < field.fieldWidth; ++x)
@@ -129,7 +137,7 @@ public:
 			if(x % 5 == 0)
 				os << verticalDash;
 			else
-				os << ' ';
+				os << marginSpacer;
 		}
 		os << endl;
 		for(uint y = 0; y < field.fieldHeight; ++y)
@@ -137,7 +145,7 @@ public:
 			if(y % 5 == 0)
 				os << horizontalDash;
 			else
-				os << ' ';
+				os << marginSpacer;
 
 			for(uint x = 0; x < field.fieldWidth; ++x)
 			{
@@ -182,16 +190,14 @@ private:
 int main()
 {
 	uint fieldWidth = defaultFieldWidth, fieldHeight = defaultFieldHeight, numberOfMines = defaultNumberOfMines;
-	stringstream ssWidthPrompt, ssHeightPrompt, ssMineNumberprompt;
+	stringstream ssWidthPrompt, ssHeightPrompt, ssMineNumberPrompt;
 	ssWidthPrompt << "Enter field width (default is " << defaultFieldWidth << "): " << endl;
 	ssHeightPrompt << "Enter field height (default is " << defaultFieldHeight << "): " << endl;
 	ssMineNumberPrompt << "Enter the number of mines (default is " << defaultNumberOfMines << "): " << endl;
-	//cout << ;
-	fieldWidth = (uint)getInt("Please enter the field width: ", cin, cout);
-	cout << 
-	cin >> fieldHeight;
-	cout 
-	cin >> numberOfMines;
+
+	fieldWidth = getUint(ssWidthPrompt.str(), cin, cout);
+	fieldHeight = getUint(ssHeightPrompt.str(), cin, cout);
+	numberOfMines = getUint(ssMineNumberPrompt.str(), cin, cout);
 
 	Field field(0, fieldWidth, fieldHeight);
 	bool firstMove = true, gameOver = false, victory = false;
@@ -203,16 +209,18 @@ int main()
 		bool correctInput = false;
 		while(!correctInput)
 		{
-			char command;
-			uint x, y;
-			cout << "Enter a command (ACTION[r,m], X[0 - " << fieldWidth - 1 << "], Y[0 - " << fieldHeight - 1 << "]): " << endl;
-			cin >> command >> x >> y;
+			char command = getChar("Action ([r]eveal, [m]ark): ", cin, cout, false);
+			stringstream ssXPrompt, ssYPrompt;
+			ssXPrompt << "X Coordinate (0 - " << fieldWidth - 1 << "): ";
+			ssYPrompt << "Y Coordinate (0 - " << fieldHeight - 1 << "): ";
+			uint x = getUint(ssXPrompt.str(), cin, cout);
+			uint y = getUint(ssYPrompt.str(), cin, cout);
 
-			if((command == 'r' || command == 'R' || command == 'm' || command == 'M') && (x >= 0 && x < fieldWidth) && (y >= 0 && y < fieldHeight))	// valid input
+			if((command == 'r' || command == 'm') && (x >= 0 && x < fieldWidth) && (y >= 0 && y < fieldHeight))	// valid input
 			{
 				correctInput = true;
 
-				if(command == 'r' || command == 'R')
+				if(command == 'r')
 				{
 					if(firstMove)
 					{
@@ -233,7 +241,7 @@ int main()
 						}
 					}
 				}
-				else if(command == 'm' || command == 'M')
+				else if(command == 'm')
 				{
 					field.markSpot(x, y);
 				}
