@@ -33,7 +33,7 @@ public:
 
 	bool revealSpot(int locX, int locY)	// returns true when a mine is hit
 	{
-		marked[locX][locY] = false;
+		marked[(uint)locX][(uint)locY] = false;
 		if(!revealedSpaces[(uint)locX][(uint)locY] && !marked[locX][locY])
 		{
 			revealedSpaces[(uint)locX][(uint)locY] = true;
@@ -129,6 +129,21 @@ public:
 			if(!revealedSpaces[x][y])								// space isn't already revealed
 				marked[x][y] = !marked[x][y];						// change whether or not it's marked
 	}
+	bool clearUnmarkedArea(uint x, uint y)	// returns true if a mine was revealed
+	{
+		for(int scanX = x - 1; scanX <= (int)x + 1; ++scanX)
+			for(int scanY = y - 1; scanY <= (int)y + 1; ++scanY)
+			{
+				if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
+					continue;
+
+				if(!revealedSpaces[(uint)scanX][(uint)scanY] && !marked[(uint)scanX][(uint)scanY])
+					if(revealSpot(scanX, scanY))
+						return true;
+			}
+
+		return false;
+	}
 	friend ostream& operator<<(ostream& os, const Field& field)		// output field
 	{
 		os << ' ';
@@ -209,14 +224,14 @@ int main()
 		bool correctInput = false;
 		while(!correctInput)
 		{
-			char command = getChar("Action ([r]eveal, [m]ark): ", cin, cout, false);
+			char command = getChar("Action ([r]eveal, [m]ark, [c]lear): ", cin, cout, false);
 			stringstream ssXPrompt, ssYPrompt;
 			ssXPrompt << "X Coordinate (0 - " << fieldWidth - 1 << "): ";
 			ssYPrompt << "Y Coordinate (0 - " << fieldHeight - 1 << "): ";
 			uint x = getUint(ssXPrompt.str(), cin, cout);
 			uint y = getUint(ssYPrompt.str(), cin, cout);
 
-			if((command == 'r' || command == 'm') && (x >= 0 && x < fieldWidth) && (y >= 0 && y < fieldHeight))	// valid input
+			if((command == 'r' || command == 'm' || command == 'c') && (x >= 0 && x < fieldWidth) && (y >= 0 && y < fieldHeight))	// valid input
 			{
 				correctInput = true;
 
@@ -232,18 +247,33 @@ int main()
 						gameOver = true;
 						victory = false;
 					}
-					else
+					else if(field.numberOfUnrevealedSpaces() == numberOfMines)
 					{
-						if(field.numberOfUnrevealedSpaces() == numberOfMines)
-						{
-							gameOver = true;
-							victory = true;
-						}
+						gameOver = true;
+						victory = true;
 					}
 				}
 				else if(command == 'm')
 				{
 					field.markSpot(x, y);
+				}
+				else if(command == 'c')
+				{
+					if(firstMove)
+					{
+						field = Field(numberOfMines, fieldWidth, fieldHeight, x, y);
+						firstMove = false;
+					}
+					else if(field.clearUnmarkedArea(x, y))
+					{
+						gameOver= true;
+						victory = false;
+					}
+					else if(field.numberOfUnrevealedSpaces() == field.numberOfMines)
+					{
+						gameOver = true;
+						victory = true;
+					}
 				}
 			}
 		}
