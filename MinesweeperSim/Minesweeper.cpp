@@ -1,4 +1,3 @@
-#include <ctime>
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -8,13 +7,13 @@
 #include "StreamInput.h"
 
 using namespace std;
-	
-const uint defaultFieldWidth = 30,
-	defaultFieldHeight = 16,
-	defaultNumberOfMines = 99;
 
 int main()
 {
+	const uint defaultFieldWidth = 30,
+		defaultFieldHeight = 16,
+		defaultNumberOfMines = 99;
+
 	uint fieldWidth = defaultFieldWidth, fieldHeight = defaultFieldHeight, numberOfMines = defaultNumberOfMines;
 	stringstream ssWidthPrompt, ssHeightPrompt, ssMineNumberPrompt;
 	ssWidthPrompt << "Enter field width (default is " << defaultFieldWidth << "): " << endl;

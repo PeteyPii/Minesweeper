@@ -10,29 +10,25 @@ const unsigned char Field::verticalDash = 186;
 const unsigned char Field::horizontalDash = 205;
 const unsigned char Field::marginSpacer = 249;
 
-
-
 bool Field::revealSpot(int x, int y)
 {
-	marked[(uint)x][(uint)y] = false;
-	if(!revealedSpaces[(uint)x][(uint)y] && !marked[x][y])
+	if(!revealedSpaces[(uint)x][(uint)y] && !marked[x][y])	// the space is not marked or already revealed
 	{
 		revealedSpaces[(uint)x][(uint)y] = true;
 
-		if(mines[(uint)x][(uint)y])
-			return true;
-		else
-			if(numberOfNearbyMines[(uint)x][(uint)y] == 0)
-			{
-				for(int scanX = x - 1; scanX <= x + 1; ++scanX)
-					for(int scanY = y - 1; scanY <= y + 1; ++scanY)
-					{
-						if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
-							continue;
+		if(mines[(uint)x][(uint)y])	
+			return true; // return true because a mine was revealed
+		else if(numberOfNearbyMines[(uint)x][(uint)y] == 0)	// recursive check to reveal spaces around a a spot with zero nearby mines
+		{
+			for(int scanX = x - 1; scanX <= x + 1; ++scanX)
+				for(int scanY = y - 1; scanY <= y + 1; ++scanY)
+				{
+					if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
+						continue;
 
-						revealSpot(scanX, scanY);
-					}
-			}
+					revealSpot(scanX, scanY);
+				}
+		}
 	}
 
 	return false;
@@ -48,15 +44,15 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdja
 {
 	bool firstSpotZero = false;
 	if(zeroAdjacentMinesLocationX != -1 && zeroAdjacentMinesLocationY != -1)
-		firstSpotZero = true;
+		firstSpotZero = true;	// if the first location variables are not default, use them
 
 	if(numberOfMines > fieldHeight * fieldWidth - 9 * (int)firstSpotZero)
-		this->numberOfMines = fieldWidth * fieldHeight - 9 * (int)firstSpotZero;
+		this->numberOfMines = fieldWidth * fieldHeight - 9 * (int)firstSpotZero;	// reduce the number of mines to a maximum base don the field
 
 	if(this->numberOfMines < 0)
-		this->numberOfMines = 0;
+		this->numberOfMines = 0;	// blanket check to make sure the number of mines is not negative from the previous call
 
-	for(uint count = 0; count < numberOfMines; ++count)
+	for(uint count = 0; count < numberOfMines; ++count)	// loop that places all the mines in random positions except where the first reveal is (if it is set)
 	{
 		bool minePlaced = false;
 		while(!minePlaced)
@@ -83,7 +79,7 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdja
 		}
 	}
 
-	for(uint x = 0; x < fieldWidth; ++x)
+	for(uint x = 0; x < fieldWidth; ++x)	// calculate hte number of nearby mines for every nearby square
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
 			int nearbyMineCount = 0;
@@ -101,8 +97,8 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdja
 				numberOfNearbyMines[x][y] = nearbyMineCount;
 		}
 
-		if(firstSpotZero)
-			revealSpot(zeroAdjacentMinesLocationX, zeroAdjacentMinesLocationY);
+	if(firstSpotZero)
+		revealSpot(zeroAdjacentMinesLocationX, zeroAdjacentMinesLocationY);	// reveal the first location, if wanted
 }
 void Field::markSpot(uint x, uint y)
 {
@@ -112,7 +108,7 @@ void Field::markSpot(uint x, uint y)
 }
 bool Field::clearUnmarkedArea(uint x, uint y)	// returns true if a mine was revealed
 {
-	for(int scanX = x - 1; scanX <= (int)x + 1; ++scanX)
+	for(int scanX = x - 1; scanX <= (int)x + 1; ++scanX)	// go through the 3x3 area around a location and reveal unmarked squares
 		for(int scanY = y - 1; scanY <= (int)y + 1; ++scanY)
 		{
 			if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
@@ -127,8 +123,8 @@ bool Field::clearUnmarkedArea(uint x, uint y)	// returns true if a mine was reve
 }
 ostream& operator<<(ostream& os, const Field& field)
 {
-	os << ' ';
-	for(uint x = 0; x < field.fieldWidth; ++x)
+	os << ' ';	// out put the space in the top left corner
+	for(uint x = 0; x < field.fieldWidth; ++x)	// output the top margin with a dash every 5 spaces
 	{
 		if(x % 5 == 0)
 			os << Field::verticalDash;
@@ -139,12 +135,13 @@ ostream& operator<<(ostream& os, const Field& field)
 	for(uint y = 0; y < field.fieldHeight; ++y)
 	{
 		if(y % 5 == 0)
-			os << Field::horizontalDash;
+			os << Field::horizontalDash;	// output a dash every 5 spaces down
 		else
-			os << Field::marginSpacer;
+			os << Field::marginSpacer;		// otherwise output a margin spacer
 
 		for(uint x = 0; x < field.fieldWidth; ++x)
 		{
+			// check the state of the space and output the correct character
 			if(field.revealedSpaces[x][y])
 			{
 				if(field.mines[x][y])
@@ -175,6 +172,7 @@ ostream& operator<<(ostream& os, const Field& field)
 }
 int Field::numberOfRevealedSpaces()
 {
+	// go through the field and check if a location has a mine
 	int count = 0;
 	for(uint x = 0; x < fieldWidth; ++x)
 		for(uint y = 0; y < fieldHeight; ++y)
@@ -184,5 +182,6 @@ int Field::numberOfRevealedSpaces()
 }
 int Field::numberOfUnrevealedSpaces()
 {
+	// number of unrevealed spaces is the field area minus the number of revealed spaces
 	return (int)fieldHeight * (int)fieldWidth - numberOfRevealedSpaces();
 }
