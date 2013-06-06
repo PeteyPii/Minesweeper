@@ -4,28 +4,22 @@
 
 #include "Field.h"
 #include "Globals.h"
+#include "Settings.h"
 #include "StreamInput.h"
 
 using namespace std;
 
 int main()
 {
-	const uint defaultFieldWidth = 30,
-		defaultFieldHeight = 16,
-		defaultNumberOfMines = 99;
-
-	uint fieldWidth = defaultFieldWidth, fieldHeight = defaultFieldHeight, numberOfMines = defaultNumberOfMines;
-	stringstream ssWidthPrompt, ssHeightPrompt, ssMineNumberPrompt;
-	ssWidthPrompt << "Enter field width (default is " << defaultFieldWidth << "): " << endl;
-	ssHeightPrompt << "Enter field height (default is " << defaultFieldHeight << "): " << endl;
-	ssMineNumberPrompt << "Enter the number of mines (default is " << defaultNumberOfMines << "): " << endl;
-
-	fieldWidth = getUint(ssWidthPrompt.str(), cin, cout);
-	fieldHeight = getUint(ssHeightPrompt.str(), cin, cout);
-	numberOfMines = getUint(ssMineNumberPrompt.str(), cin, cout);
+	Settings::loadSettings();
+	
+	uint fieldWidth, fieldHeight, numberOfMines;
+	fieldWidth = Settings::getFieldWidth();
+	fieldHeight = Settings::getFieldHeight();
+	numberOfMines = Settings::getNumberOfMines();
 
 	Field field(0, fieldWidth, fieldHeight);
-	bool firstMove = true, gameOver = false, victory = false;
+	bool firstMove = true, gameOver = false, victory = false, exitingGame = false;
 
 	while(!gameOver)
 	{
@@ -34,7 +28,15 @@ int main()
 		bool correctInput = false;
 		while(!correctInput)
 		{
-			char command = getChar("Action ([r]eveal, [m]ark, [c]lear): ", cin, cout, false);
+			char command = getChar("Action ([r]eveal, [m]ark, [c]lear, [e]xit): ", cin, cout, false);
+
+			if(command == 'e')	// short circuit to exit game
+			{
+				gameOver = true;
+				exitingGame = true;
+				break;
+			}
+
 			stringstream ssXPrompt, ssYPrompt;
 			ssXPrompt << "X Coordinate (0 - " << fieldWidth - 1 << "): ";
 			ssYPrompt << "Y Coordinate (0 - " << fieldHeight - 1 << "): ";
@@ -92,6 +94,8 @@ int main()
 	cout << field << endl;
 	if(victory)
 		cout << "Congratulations, you won!" << endl;
+	else if(exitingGame)
+		cout << "Thanks for playing Minesweeper!" << endl;
 	else
 		cout << "Game over! You revealed a mine, try again." << endl;
 

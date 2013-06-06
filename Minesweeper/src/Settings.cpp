@@ -4,6 +4,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "Globals.h"
+
 using namespace std;
 
 std::map<std::string, int> Settings::settings;
@@ -58,7 +60,11 @@ void Settings::loadSettings()
 	settingsFile.close();
 
 	// Default settings (they do not overwrite)
-	settings.insert(pair<string, int>("textOnly", 0));
+	settings.insert(pair<string, int>("fieldWidth", defaultFieldWidth));
+	settings.insert(pair<string, int>("fieldHeight", defaultFieldHeight));
+	settings.insert(pair<string, int>("numberOfMines", defaultNumberOfMines));
+
+	Settings::saveSettings();	// save default values if they were not read from a file
 }
 void Settings::saveSettings()
 {
@@ -79,14 +85,15 @@ void Settings::saveSettings()
 		throw exception("Could not save settings");
 	}
 }
-bool Settings::isGameTextOnly()
+uint Settings::getFieldWidth()
 {
-	if(settings.find("textOnly")->second != 0)	// "textOnly=1"
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return settings.find("fieldWidth")->second;
+}
+uint Settings::getFieldHeight()
+{
+	return settings.find("fieldHeight")->second;
+}
+uint Settings::getNumberOfMines()
+{
+	return settings.find("numberOfMines")->second;
 }

@@ -11,7 +11,9 @@ public:
 	static void loadSettings();
 	static void saveSettings();
 
-	static bool isGameTextOnly();
+	static unsigned int getFieldWidth();
+	static unsigned int getFieldHeight();
+	static unsigned int getNumberOfMines();
 
 private:
 	Settings();
