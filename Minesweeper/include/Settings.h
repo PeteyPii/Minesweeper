@@ -14,6 +14,8 @@ public:
 	static unsigned int getFieldWidth();
 	static unsigned int getFieldHeight();
 	static unsigned int getNumberOfMines();
+	static unsigned int getWindowWidth();
+	static unsigned int getWindowHeight();
 
 private:
 	Settings();

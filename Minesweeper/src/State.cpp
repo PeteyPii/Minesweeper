@@ -8,10 +8,6 @@ State::~State()
 {
 
 }
-void State::runTextOnly()
-{
-
-}
 void State::step()
 {
 

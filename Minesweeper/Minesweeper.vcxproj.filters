@@ -33,10 +33,25 @@
     <ClCompile Include="src\Settings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ClientResources.cpp">
+    <ClCompile Include="src\State.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\State.cpp">
+    <ClCompile Include="src\MinesweeperApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MainMenuState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Resources.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ClickableText.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Clickable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ClickableButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -56,10 +71,25 @@
     <ClInclude Include="include\Settings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\ClientResources.h">
+    <ClInclude Include="include\State.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\State.h">
+    <ClInclude Include="include\MinesweeperApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MainMenuState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ClickableText.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ClickableButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Clickable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

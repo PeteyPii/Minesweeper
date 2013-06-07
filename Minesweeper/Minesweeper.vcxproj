@@ -81,7 +81,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\ClientResources.cpp" />
+    <ClCompile Include="src\Clickable.cpp" />
+    <ClCompile Include="src\ClickableButton.cpp" />
+    <ClCompile Include="src\ClickableText.cpp" />
+    <ClCompile Include="src\MainMenuState.cpp" />
+    <ClCompile Include="src\MinesweeperApp.cpp" />
+    <ClCompile Include="src\Resources.cpp" />
     <ClCompile Include="src\Field.cpp" />
     <ClCompile Include="src\Globals.cpp" />
     <ClCompile Include="src\Minesweeper.cpp" />
@@ -91,13 +96,18 @@
     <ClCompile Include="src\StreamInput.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\ClientResources.h" />
+    <ClInclude Include="include\Clickable.h" />
+    <ClInclude Include="include\ClickableButton.h" />
+    <ClInclude Include="include\ClickableText.h" />
+    <ClInclude Include="include\Resources.h" />
     <ClInclude Include="include\Field.h" />
     <ClInclude Include="include\Globals.h" />
     <ClInclude Include="include\mtrand.h" />
     <ClInclude Include="include\Settings.h" />
     <ClInclude Include="include\State.h" />
     <ClInclude Include="include\StreamInput.h" />
+    <ClInclude Include="include\MinesweeperApp.h" />
+    <ClInclude Include="include\MainMenuState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

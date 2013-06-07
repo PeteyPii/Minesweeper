@@ -2,8 +2,10 @@
 #include <sstream>
 #include <vector>
 
+#include "Resources.h"
 #include "Field.h"
 #include "Globals.h"
+#include "MinesweeperApp.h"
 #include "Settings.h"
 #include "StreamInput.h"
 
@@ -12,6 +14,11 @@ using namespace std;
 int main()
 {
 	Settings::loadSettings();
+	Resources::getInstance().loadResources();
+
+	MinesweeperApp::getInstance().begin();
+
+	return 0;
 	
 	uint fieldWidth, fieldHeight, numberOfMines;
 	fieldWidth = Settings::getFieldWidth();

@@ -63,6 +63,8 @@ void Settings::loadSettings()
 	settings.insert(pair<string, int>("fieldWidth", defaultFieldWidth));
 	settings.insert(pair<string, int>("fieldHeight", defaultFieldHeight));
 	settings.insert(pair<string, int>("numberOfMines", defaultNumberOfMines));
+	settings.insert(pair<string, int>("windowWidth", defaultWindowWidth));
+	settings.insert(pair<string, int>("windowHeight", defualtWindowHeight));
 
 	Settings::saveSettings();	// save default values if they were not read from a file
 }
@@ -96,4 +98,12 @@ uint Settings::getFieldHeight()
 uint Settings::getNumberOfMines()
 {
 	return settings.find("numberOfMines")->second;
+}
+uint Settings::getWindowWidth()
+{
+	return settings.find("windowWidth")->second;
+}
+uint Settings::getWindowHeight()
+{
+	return settings.find("windowHeight")->second;
 }
