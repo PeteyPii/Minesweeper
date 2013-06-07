@@ -55,21 +55,21 @@ void MainMenuState::draw()
 }
 void MainMenuState::eventMouseMoved(sf::Event mouseEvent)
 {
-	updateButtons(sf::Vector2f((float)mouseEvent.mouseMove.x, (float)mouseEvent.mouseMove.y), leftButtonDown);
+	updateButtons(MinesweeperApp::getInstance().window.mapPixelToCoords(sf::Vector2i(mouseEvent.mouseMove.x, mouseEvent.mouseMove.y)), leftButtonDown);
 }
 void MainMenuState::eventMouseButtonPressed(sf::Event mouseEvent)
 {
 	if(mouseEvent.mouseButton.button == sf::Mouse::Left)
 		leftButtonDown = true;
 
-	updateButtons(sf::Vector2f((float)mouseEvent.mouseButton.x, (float)mouseEvent.mouseButton.y), leftButtonDown);
+	updateButtons(MinesweeperApp::getInstance().window.mapPixelToCoords(sf::Vector2i(mouseEvent.mouseButton.x, mouseEvent.mouseButton.y)), leftButtonDown);
 }
 void MainMenuState::eventMouseButtonReleased(sf::Event mouseEvent)
 {
 	if(mouseEvent.mouseButton.button == sf::Mouse::Left)
 		leftButtonDown = false;
 
-	updateButtons(sf::Vector2f((float)mouseEvent.mouseButton.x, (float)mouseEvent.mouseButton.y), leftButtonDown);
+	updateButtons(MinesweeperApp::getInstance().window.mapPixelToCoords(sf::Vector2i(mouseEvent.mouseButton.x, mouseEvent.mouseButton.y)), leftButtonDown);
 }
 void MainMenuState::eventKeyPressed(sf::Event keyEvent)
 {

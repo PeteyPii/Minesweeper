@@ -7,6 +7,7 @@
 MinesweeperApp::MinesweeperApp()
 	: window(sf::VideoMode(Settings::getWindowWidth(), Settings::getWindowHeight()), "Minesweeper")
 {
+	window.setFramerateLimit(60);
 	keepRunning = true;
 	currentState = &mainMenuState;
 }
