@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <string>
 
 #include "mtrand.h"
 
@@ -14,3 +15,4 @@ const uint defaultFieldWidth = 20,	// default number of columns for a field
 	defualtWindowHeight = 512;
 
 void centerOrigin(sf::Text& text);		// shifts text over so it is center aligned
+std::string numberToString(uint number);
