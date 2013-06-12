@@ -16,3 +16,4 @@ const uint defaultFieldWidth = 20,	// default number of columns for a field
 
 void centerOrigin(sf::Text& text);		// shifts text over so it is center aligned
 std::string numberToString(uint number);
+void drawRectangle(sf::RenderTarget &target, sf::FloatRect rect, sf::Color colour);
