@@ -22,4 +22,3 @@ protected:
 	bool wasClicked;
 	bool wasHovered;
 };
-

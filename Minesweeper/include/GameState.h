@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Field.h"
 #include "State.h"
 
 class Field;
@@ -11,7 +12,8 @@ class GameState : public State
 public:
 	sf::Sprite background;
 	Field field;
-	bool leftButtonDown, rightButtonDown, middleMuttonDown, firstMove;
+	bool leftButtonDown, rightButtonDown, middleButtonDown, firstMove;
+	bool inputReady;
 
 	GameState();
 	~GameState();

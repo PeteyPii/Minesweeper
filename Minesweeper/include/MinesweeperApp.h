@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+#include "GameState.h"
 #include "MainMenuState.h"
 #include "State.h"
 
@@ -12,6 +13,7 @@ public:
 	sf::RenderWindow window;
 	bool keepRunning;
 	MainMenuState mainMenuState;
+	GameState gameState;
 	State* currentState;
 
 	~MinesweeperApp();

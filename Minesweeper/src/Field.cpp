@@ -20,7 +20,10 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdja
 	revealed(fieldWidth, vector<bool>(fieldHeight, false)),
 	marked(fieldWidth, vector<bool>(fieldHeight, false)),
 	numberOfNearbyMines(fieldWidth, vector<int>(fieldHeight, 0)),
-	buttons(fieldWidth, vector<ClickableButton>(fieldHeight, ClickableButton())),
+	buttonsLMB(fieldWidth, vector<ClickableButton>(fieldHeight, ClickableButton())),
+	buttonsRMB(fieldWidth, vector<ClickableButton>(fieldHeight, ClickableButton())),
+	buttonsMMB(fieldWidth, vector<ClickableButton>(fieldHeight, ClickableButton())),
+	buttonsVisual(fieldWidth, vector<ClickableButton>(fieldHeight, ClickableButton())),
 	textNumbers(fieldWidth, vector<sf::Text>(fieldHeight, sf::Text())),
 	numberOfMines(numberOfMines),
 	fieldWidth(fieldWidth),
@@ -88,9 +91,15 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdja
 	for(uint x = 0; x < fieldWidth; ++x)	// set up the buttons on every square
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
-			buttons[x][y] = ClickableButton(&resources.area, sf::Vector2f(x * areaSideLength, y * areaSideLength), sf::Vector2f(areaSideLength, areaSideLength);
+			sf::Vector2f buttonPosition((float)x * areaSideLength, (float)y * areaSideLength);
+			sf::Vector2f buttonSize((float)areaSideLength, (float)areaSideLength);
+			buttonsVisual[x][y] = ClickableButton(&resources.area, buttonPosition, buttonSize);
+			buttonsLMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
+			buttonsRMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
+			buttonsMMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
 			textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.timesFont, 20);
-			textNumbers[x][y].setPosition((x + 0.5) * areaSideLength, (y + 0.5) * areaSideLength);
+			textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength, (y + 0.5f) * areaSideLength - 3);
+			textNumbers[x][y].setColor(sf::Color::Black);
 			centerOrigin(textNumbers[x][y]);
 		}
 
@@ -104,8 +113,10 @@ bool Field::revealSpot(int x, int y)
 		revealed[(uint)x][(uint)y] = true;
 
 		if(mines[(uint)x][(uint)y])	
+		{
 			return true; // return true because a mine was revealed
-		else if(numberOfNearbyMines[(uint)x][(uint)y] == 0)	// recursive check to reveal spaces around a a spot with zero nearby mines
+		}
+		else if(numberOfNearbyMines[(uint)x][(uint)y] == 0)	// recursive check to reveal spaces around a spot with zero nearby mines
 		{
 			for(int scanX = x - 1; scanX <= x + 1; ++scanX)
 				for(int scanY = y - 1; scanY <= y + 1; ++scanY)
@@ -211,8 +222,28 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
 			if(revealed[x][y])
+			{
 				if(mines[x][y])
-
+				{
+					sf::Sprite mine(Resources::getInstance().mine);
+					mine.setPosition((float)x * mine.getTexture()->getSize().x, (float)y * mine.getTexture()->getSize().x);
+					target.draw(mine);
+				}
+				else
+				{
+					target.draw(textNumbers[x][y]);
+				}
+			}
+			else
+			{
+				target.draw(buttonsVisual[x][y]);
+				if(marked[x][y])
+				{
+					sf::Sprite mark(Resources::getInstance().mark);
+					mark.setPosition((float)x * mark.getTexture()->getSize().x, (float)y * mark.getTexture()->getSize().x);
+					target.draw(mark);
+				}
+			}
 		}
 }
 void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown)
@@ -220,15 +251,15 @@ void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool 
 	for(uint x = 0; x < fieldWidth; ++x)
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
-			if(buttons[x][y].updateAndGetClicked(mousePosition, isLeftDown))	// left click to reveal squares
+			if(buttonsLMB[x][y].updateAndGetClicked(mousePosition, isLeftDown))	// left click to reveal squares
 				revealSpot((int)x, (int)y);
 
-			if(buttons[x][y].updateAndGetClicked(mousePosition, isRightDown))	// right click to mark squares
+			if(buttonsRMB[x][y].updateAndGetClicked(mousePosition, isRightDown))	// right click to mark squares
 				markSpot(x, y);
 
-			if(buttons[x][y].updateAndGetClicked(mousePosition, isMiddleDown))	// middle click to clear around a square
+			if(buttonsMMB[x][y].updateAndGetClicked(mousePosition, isMiddleDown))	// middle click to clear around a square
 				clearUnmarkedArea(x, y);
 
-			buttons[x][y].updateAndGetClicked(mousePosition, isLeftDown || isRightDown || isMiddleDown);	// last call to draw the square properly
+			buttonsVisual[x][y].updateAndGetClicked(mousePosition, isLeftDown || isRightDown || isMiddleDown);	// call to draw the square properly
 		}
 }

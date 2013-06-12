@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-class ClickableButton;
+#include "ClickableButton.h"
 
 class Field : public sf::Drawable
 {
@@ -21,7 +21,7 @@ public:
 	std::vector<std::vector<bool> > revealed;			// true for a revealed square
 	std::vector<std::vector<bool> > marked;				// true for a space marked as a present mine
 	std::vector<std::vector<int> > numberOfNearbyMines;
-	std::vector<std::vector<ClickableButton> > buttons;
+	std::vector<std::vector<ClickableButton> > buttonsLMB, buttonsRMB, buttonsMMB, buttonsVisual;
 	std::vector<std::vector<sf::Text> > textNumbers;
 
 	unsigned int numberOfMines;		// number of mines present in the field

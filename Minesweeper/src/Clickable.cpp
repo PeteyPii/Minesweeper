@@ -3,6 +3,7 @@
 Clickable::Clickable(sf::FloatRect rect)
 {
 	this->rect = rect;
+	resetStates();
 }
 Clickable::~Clickable()
 {

@@ -10,6 +10,9 @@ ClickableButton::ClickableButton(sf::Texture *texture, sf::Vector2f position, sf
 
 	sprite.setPosition(position);
 
+	if(texture != 0)
+		sprite.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(sprite.getTexture()->getSize().x / 4, sprite.getTexture()->getSize().y)));
+
 	rect = sf::FloatRect(position, size);
 }
 ClickableButton::~ClickableButton()

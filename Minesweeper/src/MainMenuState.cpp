@@ -87,6 +87,9 @@ void MainMenuState::updateButtons(sf::Vector2f mousePosition, bool isLeftDown)
 void MainMenuState::play()
 {
 	playGame.resetStates();
+	MinesweeperApp& app = MinesweeperApp::getInstance();
+	app.getInstance().currentState = &app.gameState;
+	app.gameState.newGame();
 }
 void MainMenuState::exit()
 {

@@ -17,4 +17,3 @@ public:
 	virtual void clicked();
 	void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 };
-

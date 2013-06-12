@@ -3,6 +3,8 @@
 #include <ctime>
 #include <sstream>
 
+using namespace std;
+
 extern MTRand_int32 random((unsigned long)time(0));
 
 void centerOrigin(sf::Text& text)
