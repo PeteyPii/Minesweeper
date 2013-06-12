@@ -86,7 +86,7 @@ void MainMenuState::updateButtons(sf::Vector2f mousePosition, bool isLeftDown)
 }
 void MainMenuState::play()
 {
-
+	playGame.resetStates();
 }
 void MainMenuState::exit()
 {

@@ -1,5 +1,10 @@
 #include "Field.h"
 
+#include "ClickableButton.h"
+#include "Globals.h"
+#include "MinesweeperApp.h"
+#include "Resources.h"
+
 using namespace std;
 
 // definitions of static constants
@@ -10,34 +15,13 @@ const unsigned char Field::verticalDash = 186;
 const unsigned char Field::horizontalDash = 205;
 const unsigned char Field::marginSpacer = 249;
 
-bool Field::revealSpot(int x, int y)
-{
-	if(!revealedSpaces[(uint)x][(uint)y] && !marked[x][y])	// the space is not marked or already revealed
-	{
-		revealedSpaces[(uint)x][(uint)y] = true;
-
-		if(mines[(uint)x][(uint)y])	
-			return true; // return true because a mine was revealed
-		else if(numberOfNearbyMines[(uint)x][(uint)y] == 0)	// recursive check to reveal spaces around a a spot with zero nearby mines
-		{
-			for(int scanX = x - 1; scanX <= x + 1; ++scanX)
-				for(int scanY = y - 1; scanY <= y + 1; ++scanY)
-				{
-					if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
-						continue;
-
-					revealSpot(scanX, scanY);
-				}
-		}
-	}
-
-	return false;
-}
 Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdjacentMinesLocationX, int zeroAdjacentMinesLocationY)
 	: mines(fieldWidth, vector<bool>(fieldHeight, false)),
-	revealedSpaces(fieldWidth, vector<bool>(fieldHeight, false)),
+	revealed(fieldWidth, vector<bool>(fieldHeight, false)),
 	marked(fieldWidth, vector<bool>(fieldHeight, false)),
 	numberOfNearbyMines(fieldWidth, vector<int>(fieldHeight, 0)),
+	buttons(fieldWidth, vector<ClickableButton>(fieldHeight, ClickableButton())),
+	textNumbers(fieldWidth, vector<sf::Text>(fieldHeight, sf::Text())),
 	numberOfMines(numberOfMines),
 	fieldWidth(fieldWidth),
 	fieldHeight(fieldHeight)
@@ -79,7 +63,7 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdja
 		}
 	}
 
-	for(uint x = 0; x < fieldWidth; ++x)	// calculate hte number of nearby mines for every nearby square
+	for(uint x = 0; x < fieldWidth; ++x)	// calculate the number of nearby mines for every nearby square
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
 			int nearbyMineCount = 0;
@@ -94,16 +78,52 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdja
 						++nearbyMineCount;
 				}
 
-				numberOfNearbyMines[x][y] = nearbyMineCount;
+			numberOfNearbyMines[x][y] = nearbyMineCount;
+		}
+
+	MinesweeperApp& app = MinesweeperApp::getInstance();
+	Resources& resources = Resources::getInstance();
+	uint areaSideLength = resources.area.getSize().y;
+
+	for(uint x = 0; x < fieldWidth; ++x)	// set up the buttons on every square
+		for(uint y = 0; y < fieldHeight; ++y)
+		{
+			buttons[x][y] = ClickableButton(&resources.area, sf::Vector2f(x * areaSideLength, y * areaSideLength), sf::Vector2f(areaSideLength, areaSideLength);
+			textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.timesFont, 20);
+			textNumbers[x][y].setPosition((x + 0.5) * areaSideLength, (y + 0.5) * areaSideLength);
+			centerOrigin(textNumbers[x][y]);
 		}
 
 	if(firstSpotZero)
 		revealSpot(zeroAdjacentMinesLocationX, zeroAdjacentMinesLocationY);	// reveal the first location, if wanted
 }
+bool Field::revealSpot(int x, int y)
+{
+	if(!revealed[(uint)x][(uint)y] && !marked[x][y])	// the space is not marked or already revealed
+	{
+		revealed[(uint)x][(uint)y] = true;
+
+		if(mines[(uint)x][(uint)y])	
+			return true; // return true because a mine was revealed
+		else if(numberOfNearbyMines[(uint)x][(uint)y] == 0)	// recursive check to reveal spaces around a a spot with zero nearby mines
+		{
+			for(int scanX = x - 1; scanX <= x + 1; ++scanX)
+				for(int scanY = y - 1; scanY <= y + 1; ++scanY)
+				{
+					if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
+						continue;
+
+					revealSpot(scanX, scanY);
+				}
+		}
+	}
+
+	return false;
+}
 void Field::markSpot(uint x, uint y)
 {
 	if(x >= 0 && x < fieldWidth && y >= 0 && y < fieldHeight)	// not out of bounds
-		if(!revealedSpaces[x][y])								// space isn't already revealed
+		if(!revealed[x][y])								// space isn't already revealed
 			marked[x][y] = !marked[x][y];						// change whether or not it's marked
 }
 bool Field::clearUnmarkedArea(uint x, uint y)	// returns true if a mine was revealed
@@ -114,7 +134,7 @@ bool Field::clearUnmarkedArea(uint x, uint y)	// returns true if a mine was reve
 			if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
 				continue;
 
-			if(!revealedSpaces[(uint)scanX][(uint)scanY] && !marked[(uint)scanX][(uint)scanY])
+			if(!revealed[(uint)scanX][(uint)scanY] && !marked[(uint)scanX][(uint)scanY])
 				if(revealSpot(scanX, scanY))
 					return true;
 		}
@@ -142,7 +162,7 @@ ostream& operator<<(ostream& os, const Field& field)
 		for(uint x = 0; x < field.fieldWidth; ++x)
 		{
 			// check the state of the space and output the correct character
-			if(field.revealedSpaces[x][y])
+			if(field.revealed[x][y])
 			{
 				if(field.mines[x][y])
 				{
@@ -176,7 +196,7 @@ int Field::numberOfRevealedSpaces()
 	int count = 0;
 	for(uint x = 0; x < fieldWidth; ++x)
 		for(uint y = 0; y < fieldHeight; ++y)
-			if(revealedSpaces[x][y])
+			if(revealed[x][y])
 				++count;
 	return count;
 }
@@ -184,4 +204,31 @@ int Field::numberOfUnrevealedSpaces()
 {
 	// number of unrevealed spaces is the field area minus the number of revealed spaces
 	return (int)fieldHeight * (int)fieldWidth - numberOfRevealedSpaces();
+}
+void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
+{
+	for(uint x = 0; x < fieldWidth; ++x)
+		for(uint y = 0; y < fieldHeight; ++y)
+		{
+			if(revealed[x][y])
+				if(mines[x][y])
+
+		}
+}
+void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown)
+{
+	for(uint x = 0; x < fieldWidth; ++x)
+		for(uint y = 0; y < fieldHeight; ++y)
+		{
+			if(buttons[x][y].updateAndGetClicked(mousePosition, isLeftDown))	// left click to reveal squares
+				revealSpot((int)x, (int)y);
+
+			if(buttons[x][y].updateAndGetClicked(mousePosition, isRightDown))	// right click to mark squares
+				markSpot(x, y);
+
+			if(buttons[x][y].updateAndGetClicked(mousePosition, isMiddleDown))	// middle click to clear around a square
+				clearUnmarkedArea(x, y);
+
+			buttons[x][y].updateAndGetClicked(mousePosition, isLeftDown || isRightDown || isMiddleDown);	// last call to draw the square properly
+		}
 }

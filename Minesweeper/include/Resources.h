@@ -5,7 +5,7 @@
 class Resources
 {
 public:
-	sf::Texture background;
+	sf::Texture background, mine, mark, area;
 	sf::Font timesFont;
 
 	~Resources();
@@ -17,7 +17,7 @@ public:
 private:
 	Resources();  
 
-	Resources(Resources const&);	// do not implement
-	void operator=(Resources const&);		// do not implement
+	Resources(Resources const&);		// do not implement
+	void operator=(Resources const&);	// do not implement
 };
 

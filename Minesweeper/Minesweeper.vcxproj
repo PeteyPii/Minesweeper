@@ -81,6 +81,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\GameState.cpp" />
     <ClCompile Include="src\Clickable.cpp" />
     <ClCompile Include="src\ClickableButton.cpp" />
     <ClCompile Include="src\ClickableText.cpp" />
@@ -96,6 +97,7 @@
     <ClCompile Include="src\StreamInput.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\GameState.h" />
     <ClInclude Include="include\Clickable.h" />
     <ClInclude Include="include\ClickableButton.h" />
     <ClInclude Include="include\ClickableText.h" />

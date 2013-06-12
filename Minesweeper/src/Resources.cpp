@@ -17,6 +17,9 @@ Resources& Resources::getInstance()
 void Resources::loadResources()
 {
 	background.loadFromFile("resources/images/background.png");
+	mine.loadFromFile("resources/images/mine.png");
+	mark.loadFromFile("resources/images/mark.png");
+	area.loadFromFile("resources/images/area.png");
 
 	timesFont.loadFromFile("resources/fonts/times.ttf");
 }
