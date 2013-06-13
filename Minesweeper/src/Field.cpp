@@ -16,7 +16,7 @@ const unsigned char Field::horizontalDash = 205;
 const unsigned char Field::marginSpacer = 249;
 const sf::Color Field::backgroundColour = sf::Color(190, 190, 255, 255);
 
-Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdjacentMinesLocationX, int zeroAdjacentMinesLocationY)
+Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, bool firstMoveZero)
 	: mines(fieldWidth, vector<bool>(fieldHeight, false)),
 	revealed(fieldWidth, vector<bool>(fieldHeight, false)),
 	marked(fieldWidth, vector<bool>(fieldHeight, false)),
@@ -30,60 +30,16 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdja
 	fieldWidth(fieldWidth),
 	fieldHeight(fieldHeight)
 {
-	bool firstSpotZero = false;
-	if(zeroAdjacentMinesLocationX != -1 && zeroAdjacentMinesLocationY != -1)
-		firstSpotZero = true;	// if the first location variables are not default, use them
+	firstMove = firstMoveZero;
 
-	if(numberOfMines > fieldHeight * fieldWidth - 9 * (int)firstSpotZero)
-		this->numberOfMines = fieldWidth * fieldHeight - 9 * (int)firstSpotZero;	// reduce the number of mines to a maximum base don the field
+	if(numberOfMines > fieldHeight * fieldWidth - 9 * (int)firstMove)
+		this->numberOfMines = fieldWidth * fieldHeight - 9 * (int)firstMove;	// reduce the number of mines to a maximum base don the field
 
 	if(this->numberOfMines < 0)
 		this->numberOfMines = 0;	// blanket check to make sure the number of mines is not negative from the previous call
 
-	for(uint count = 0; count < numberOfMines; ++count)	// loop that places all the mines in random positions except where the first reveal is (if it is set)
-	{
-		bool minePlaced = false;
-		while(!minePlaced)
-		{
-			int randX = random() % fieldWidth;
-			int randY = random() % fieldHeight;
-
-			if(!mines[(uint)randX][(uint)randY])
-			{
-				if(firstSpotZero)
-				{
-					if((randX - zeroAdjacentMinesLocationX < -1 || randX - zeroAdjacentMinesLocationX > 1) || (randY - zeroAdjacentMinesLocationY < -1 || randY - zeroAdjacentMinesLocationY > 1))
-					{
-						mines[(uint)randX][(uint)randY] = true;
-						minePlaced = true;
-					}
-				}
-				else
-				{
-					mines[(uint)randX][(uint)randY] = true;
-					minePlaced = true;
-				}
-			}
-		}
-	}
-
-	for(uint x = 0; x < fieldWidth; ++x)	// calculate the number of nearby mines for every nearby square
-		for(uint y = 0; y < fieldHeight; ++y)
-		{
-			int nearbyMineCount = 0;
-
-			for(int scanX = x - 1; scanX <= (int)x + 1; ++scanX)
-				for(int scanY = y - 1; scanY <= (int)y + 1; ++scanY)
-				{
-					if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
-						continue;
-
-					if(mines[(uint)scanX][(uint)scanY])
-						++nearbyMineCount;
-				}
-
-			numberOfNearbyMines[x][y] = nearbyMineCount;
-		}
+	if(!firstMove)
+		generateField();
 
 	MinesweeperApp& app = MinesweeperApp::getInstance();
 	Resources& resources = Resources::getInstance();
@@ -98,25 +54,22 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdja
 			buttonsLMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
 			buttonsRMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
 			buttonsMMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
-
-			if(numberOfNearbyMines[x][y] != 0)
-			{
-				textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.timesFont, 20);
-				textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength, (y + 0.5f) * areaSideLength - 3);
-				textNumbers[x][y].setColor(sf::Color::Black);
-				centerOrigin(textNumbers[x][y]);
-			}
 		}
 
 	background = sf::RectangleShape(sf::Vector2f((float)fieldWidth * areaSideLength, (float)fieldHeight * areaSideLength));
 	background.setFillColor(backgroundColour);
 	background.setOutlineThickness(0.0f);
 
-	if(firstSpotZero)
-		revealSpot(zeroAdjacentMinesLocationX, zeroAdjacentMinesLocationY);	// reveal the first location, if wanted
+	hover = sf::RectangleShape(sf::Vector2f((float)areaSideLength, (float)areaSideLength));
+	hover.setFillColor(sf::Color(255, 255, 255, 128));
+	hover.setOutlineThickness(0.0f);
+	hover.setPosition(-1.0f * areaSideLength, -1.0f * areaSideLength);
 }
 bool Field::revealSpot(int x, int y)
 {
+	if(firstMove)
+		generateField(x, y);
+
 	if(!revealed[(uint)x][(uint)y] && !marked[x][y])	// the space is not marked or already revealed
 	{
 		revealed[(uint)x][(uint)y] = true;
@@ -259,9 +212,13 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 			sf::FloatRect rect((float)x * areaSideLength, (float)y * areaSideLength, (float)areaSideLength, (float)areaSideLength);
 			drawRectangle(target, rect, sf::Color::Black);
 		}
+
+	target.draw(hover);
 }
 void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown)
 {
+	hover.setPosition((float)((uint)mousePosition.x / (uint)hover.getSize().x * (uint)hover.getSize().x), (float)((uint)mousePosition.y / (uint)hover.getSize().y * (uint)hover.getSize().y));
+
 	for(uint x = 0; x < fieldWidth; ++x)
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
@@ -275,5 +232,67 @@ void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool 
 				clearUnmarkedArea(x, y);
 
 			buttonsVisual[x][y].updateAndGetClicked(mousePosition, isLeftDown || isRightDown || isMiddleDown);	// call to draw the square properly
+		}
+}
+void Field::generateField(int zeroAdjacentMinesLocationX, int zeroAdjacentMinesLocationY)
+{
+	for(uint count = 0; count < numberOfMines; ++count)	// loop that places all the mines in random positions except where the first reveal is (if it is set)
+	{
+		bool minePlaced = false;
+		while(!minePlaced)
+		{
+			int randX = random() % fieldWidth;
+			int randY = random() % fieldHeight;
+
+			if(!mines[(uint)randX][(uint)randY])
+			{
+				if(firstMove)
+				{
+					if((randX - zeroAdjacentMinesLocationX < -1 || randX - zeroAdjacentMinesLocationX > 1) || (randY - zeroAdjacentMinesLocationY < -1 || randY - zeroAdjacentMinesLocationY > 1))
+					{
+						mines[(uint)randX][(uint)randY] = true;
+						minePlaced = true;
+					}
+				}
+				else
+				{
+					mines[(uint)randX][(uint)randY] = true;
+					minePlaced = true;
+				}
+			}
+		}
+	}
+
+	for(uint x = 0; x < fieldWidth; ++x)	// calculate the number of nearby mines for every nearby square
+		for(uint y = 0; y < fieldHeight; ++y)
+		{
+			int nearbyMineCount = 0;
+
+			for(int scanX = x - 1; scanX <= (int)x + 1; ++scanX)
+				for(int scanY = y - 1; scanY <= (int)y + 1; ++scanY)
+				{
+					if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
+						continue;
+
+					if(mines[(uint)scanX][(uint)scanY])
+						++nearbyMineCount;
+				}
+
+			numberOfNearbyMines[x][y] = nearbyMineCount;
+		}
+
+	Resources& resources = Resources::getInstance();
+	uint areaSideLength = resources.area.getSize().y;
+
+	for(uint x = 0; x < fieldWidth; ++x)	// set up the nearby mine number text for every square
+		for(uint y = 0; y < fieldHeight; ++y)
+		{
+			if(numberOfNearbyMines[x][y] != 0)
+			{
+				textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.timesFont, 20);
+				textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength, (y + 0.5f) * areaSideLength - 3);
+				textNumbers[x][y].setColor(sf::Color::Black);
+				centerOrigin(textNumbers[x][y]);
+			}
 		}
 }

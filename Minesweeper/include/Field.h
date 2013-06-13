@@ -25,6 +25,7 @@ public:
 	std::vector<std::vector<ClickableButton> > buttonsLMB, buttonsRMB, buttonsMMB, buttonsVisual;
 	std::vector<std::vector<sf::Text> > textNumbers;
 
+	bool firstMove;
 	unsigned int numberOfMines;		// number of mines present in the field
 	unsigned int fieldWidth, fieldHeight;
 	sf::RectangleShape background, hover;
@@ -33,9 +34,8 @@ public:
 	// numberOfMines: number of mines present in the field
 	// fieldWidth: the number of columns the field has
 	// fieldHeight: the number of rows the field has
-	// zeroAdjacentMinesLocationX: if set, the x-coordinate of where no mines will spawn near
-	// zeroAdjacentMinesLocationY: if set, the y-coordinate of where no mines will spawn near
-	Field(unsigned int numberOfMines, unsigned int fieldWidth, unsigned int fieldHeight, int zeroAdjacentMinesLocationX = -1, int zeroAdjacentMinesLocationY = -1);
+	// firstMoveZero: whether or not the first revealed square will have zero nearby mines, true for yes
+	Field(unsigned int numberOfMines, unsigned int fieldWidth, unsigned int fieldHeight, bool firstMoveZero = false);
 
 	// function to reveal a location on the field
 	// return: true if a mine is revealed
@@ -82,4 +82,6 @@ public:
 
 private:
 	Field();	// private default constructor (cannot be used)
+
+	void generateField(int zeroAdjacentMinesLocationX = -1, int zeroAdjacentMinesLocationY = -1);
 };
