@@ -16,6 +16,7 @@ public:
 		verticalDash,						// dash for the top margin
 		horizontalDash,						// dash for the bottom margin
 		marginSpacer;						// character between the margin dashes
+	const static sf::Color backgroundColour;	// colour the numbers are drawn an top of
 
 	std::vector<std::vector<bool> > mines;				// true for a mine in the spot
 	std::vector<std::vector<bool> > revealed;			// true for a revealed square
@@ -26,6 +27,7 @@ public:
 
 	unsigned int numberOfMines;		// number of mines present in the field
 	unsigned int fieldWidth, fieldHeight;
+	sf::RectangleShape background, hover;
 
 	// class constructor
 	// numberOfMines: number of mines present in the field

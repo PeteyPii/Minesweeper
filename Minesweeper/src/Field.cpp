@@ -14,6 +14,7 @@ const unsigned char Field::hiddenChar = 35;
 const unsigned char Field::verticalDash = 186;
 const unsigned char Field::horizontalDash = 205;
 const unsigned char Field::marginSpacer = 249;
+const sf::Color Field::backgroundColour = sf::Color(190, 190, 255, 255);
 
 Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdjacentMinesLocationX, int zeroAdjacentMinesLocationY)
 	: mines(fieldWidth, vector<bool>(fieldHeight, false)),
@@ -97,11 +98,19 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, int zeroAdja
 			buttonsLMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
 			buttonsRMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
 			buttonsMMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
-			textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.timesFont, 20);
-			textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength, (y + 0.5f) * areaSideLength - 3);
-			textNumbers[x][y].setColor(sf::Color::Black);
-			centerOrigin(textNumbers[x][y]);
+
+			if(numberOfNearbyMines[x][y] != 0)
+			{
+				textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.timesFont, 20);
+				textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength, (y + 0.5f) * areaSideLength - 3);
+				textNumbers[x][y].setColor(sf::Color::Black);
+				centerOrigin(textNumbers[x][y]);
+			}
 		}
+
+	background = sf::RectangleShape(sf::Vector2f((float)fieldWidth * areaSideLength, (float)fieldHeight * areaSideLength));
+	background.setFillColor(backgroundColour);
+	background.setOutlineThickness(0.0f);
 
 	if(firstSpotZero)
 		revealSpot(zeroAdjacentMinesLocationX, zeroAdjacentMinesLocationY);	// reveal the first location, if wanted
@@ -218,6 +227,8 @@ int Field::numberOfUnrevealedSpaces()
 }
 void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 {
+	target.draw(background);
+	uint areaSideLength = Resources::getInstance().area.getSize().y;
 	for(uint x = 0; x < fieldWidth; ++x)
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
@@ -226,7 +237,7 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 				if(mines[x][y])
 				{
 					sf::Sprite mine(Resources::getInstance().mine);
-					mine.setPosition((float)x * mine.getTexture()->getSize().x, (float)y * mine.getTexture()->getSize().x);
+					mine.setPosition((float)x * areaSideLength, (float)y * areaSideLength);
 					target.draw(mine);
 				}
 				else
@@ -244,6 +255,9 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 					target.draw(mark);
 				}
 			}
+
+			sf::FloatRect rect((float)x * areaSideLength, (float)y * areaSideLength, (float)areaSideLength, (float)areaSideLength);
+			drawRectangle(target, rect, sf::Color::Black);
 		}
 }
 void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown)
