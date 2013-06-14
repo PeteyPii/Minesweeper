@@ -17,6 +17,7 @@ public:
 		horizontalDash,						// dash for the bottom margin
 		marginSpacer;						// character between the margin dashes
 	const static sf::Color backgroundColour;	// colour the numbers are drawn an top of
+	const static sf::Color numberColours[10];
 
 	std::vector<std::vector<bool> > mines;				// true for a mine in the spot
 	std::vector<std::vector<bool> > revealed;			// true for a revealed square

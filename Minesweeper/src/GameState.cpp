@@ -7,14 +7,23 @@
 #include "Resources.h"
 #include "Settings.h"
 
+const float GameState::infoTextSizeFactor = 0.5f;
+
 GameState::GameState()
 	: field(0, 1, 1)
 {
 	leftButtonDown = false;
 	rightButtonDown = false;
 	middleButtonDown = false;
-	firstMove = true;
 	inputReady = false;
+
+	Resources& resources = Resources::getInstance();
+
+	background = sf::Sprite(resources.background);
+	timeElapsedText = sf::Text("0", resources.squareFont, 0);
+	minesLeft = sf::Text("0", resources.squareFont, 0);
+	timeElapsedTitle = sf::Text("Time: ", resources.timesFont, 0);
+	minesLeftTitle = sf::Text("Mines Left: ", resources.timesFont, 0);
 }
 GameState::~GameState()
 {
@@ -31,7 +40,10 @@ void GameState::draw()
 
 	app.window.clear(sf::Color::White);
 
+	app.window.draw(background);
 	app.window.draw(field);
+	app.window.draw(timeElapsedTitle);
+	app.window.draw(timeElapsedText);
 
 	app.window.display();
 }
@@ -80,7 +92,6 @@ void GameState::updateButtons(sf::Vector2f mousePosition, bool isLeftDown, bool 
 }
 void GameState::newGame()
 {
-	firstMove = true;
 	field = Field(Settings::getNumberOfMines(), 
 		Settings::getFieldWidth(), 
 		Settings::getFieldHeight(),
@@ -96,6 +107,19 @@ void GameState::newGame()
 		view.setCenter(view.getSize().x * 0.5f,
 			view.getSize().y * 0.5f);
 		app.window.setView(view);
+
+		background.setScale(view.getSize().x / background.getTexture()->getSize().x, 
+			view.getSize().y / background.getTexture()->getSize().y);
+
+		
+		minesLeft.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
+		timeElapsedTitle.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
+		timeElapsedTitle.setPosition(view.getSize().x * 0.3f, view.getSize().y - fieldMargin * 0.5f);
+		centerOrigin(timeElapsedTitle);
+
+		timeElapsedText.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
+		timeElapsedText.setPosition(timeElapsedTitle.getGlobalBounds().left + timeElapsedTitle.getGlobalBounds().width + 5.0f, timeElapsedTitle.getGlobalBounds().top);
+		minesLeftTitle.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
 	}
 		
 }

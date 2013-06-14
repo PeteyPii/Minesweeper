@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>]
 
 #include "Field.h"
 #include "State.h"
@@ -10,9 +11,14 @@ class Field;
 class GameState : public State
 {
 public:
+	const static float infoTextSizeFactor;
+
 	sf::Sprite background;
+	sf::Text timeElapsedText, minesLeft;
+	sf::Text timeElapsedTitle, minesLeftTitle;
+	sf::Time timeElapsed, idleTime;
 	Field field;
-	bool leftButtonDown, rightButtonDown, middleButtonDown, firstMove;
+	bool leftButtonDown, rightButtonDown, middleButtonDown;
 	bool inputReady;
 
 	GameState();

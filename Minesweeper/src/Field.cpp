@@ -17,6 +17,16 @@ const unsigned char Field::verticalDash = 186;
 const unsigned char Field::horizontalDash = 205;
 const unsigned char Field::marginSpacer = 249;
 const sf::Color Field::backgroundColour = sf::Color(190, 190, 255, 255);
+const sf::Color Field::numberColours[] = {sf::Color(0, 0, 0, 0), 
+	sf::Color(128, 128, 255, 255),
+	sf::Color(128, 255, 128, 255),
+	sf::Color(255, 128, 128, 255),
+	sf::Color(0, 0, 255, 255),
+	sf::Color(128, 0, 128, 255),
+	sf::Color(0, 128, 128, 255),
+	sf::Color(128, 128, 255, 255),
+	sf::Color(128, 128, 128, 255),
+	sf::Color(0, 0, 0, 0)};
 
 Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, bool firstMoveZero)
 	: mines(fieldWidth, vector<bool>(fieldHeight, false)),
@@ -303,13 +313,10 @@ void Field::generateField(int zeroAdjacentMinesLocationX, int zeroAdjacentMinesL
 	for(uint x = 0; x < fieldWidth; ++x)	// set up the nearby mine number text for every square
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
-			if(numberOfNearbyMines[x][y] != 0)
-			{
-				textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.squareFont, 20);
-				textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength + position.x, (y + 0.5f) * areaSideLength - 3 + position.y);
-				textNumbers[x][y].setColor(sf::Color::Black);
-				centerOrigin(textNumbers[x][y]);
-			}
+			textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.squareFont, 20);
+			textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength + position.x, (y + 0.5f) * areaSideLength - 3 + position.y);
+			textNumbers[x][y].setColor(numberColours[numberOfNearbyMines[x][y]]);
+			centerOrigin(textNumbers[x][y]);
 		}
 }
 bool Field::isVictoryReached()
