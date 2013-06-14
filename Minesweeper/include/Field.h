@@ -29,6 +29,7 @@ public:
 	unsigned int numberOfMines;		// number of mines present in the field
 	unsigned int fieldWidth, fieldHeight;
 	sf::RectangleShape background, hover;
+	sf::Vector2f position;
 
 	// class constructor
 	// numberOfMines: number of mines present in the field
@@ -79,6 +80,21 @@ public:
 	// isRightDown: is the right mouse button pressed
 	// isMiddleDown: is the middle mouse button pressed
 	void updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown);
+
+	// function that checks if enough spaces have been revealed for a victorious game
+	// return: true if the game has been won, false otherwise
+	bool isVictoryReached();
+
+	// function that checks if a mine has been revealed for a unsuccessful game
+	// return: true if a mine has been revealed, false otherwise
+	bool isDefeatReached();
+
+	// function that moves the sprites and everything else that is drawn by the field to a certain position
+	// position: coordinates of the top left corner of the field
+	void setFieldPosition(sf::Vector2f position);
+
+	// see void setFieldPosition(sf::Vector2f positon)
+	void setFieldPosition(float positionX, float positionY);
 
 private:
 	Field();	// private default constructor (cannot be used)

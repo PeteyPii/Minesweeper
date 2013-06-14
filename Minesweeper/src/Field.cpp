@@ -1,5 +1,7 @@
 #include "Field.h"
 
+#include <cmath>
+
 #include "ClickableButton.h"
 #include "Globals.h"
 #include "MinesweeperApp.h"
@@ -61,14 +63,17 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, bool firstMo
 	background.setOutlineThickness(0.0f);
 
 	hover = sf::RectangleShape(sf::Vector2f((float)areaSideLength, (float)areaSideLength));
-	hover.setFillColor(sf::Color(255, 255, 255, 128));
+	hover.setFillColor(sf::Color(255, 255, 255, 78));
 	hover.setOutlineThickness(0.0f);
-	hover.setPosition(-1.0f * areaSideLength, -1.0f * areaSideLength);
+	hover.setPosition(-100.0f * areaSideLength, -100.0f * areaSideLength);
 }
 bool Field::revealSpot(int x, int y)
 {
 	if(firstMove)
+	{
 		generateField(x, y);
+		firstMove = false;
+	}
 
 	if(!revealed[(uint)x][(uint)y] && !marked[x][y])	// the space is not marked or already revealed
 	{
@@ -101,18 +106,26 @@ void Field::markSpot(uint x, uint y)
 }
 bool Field::clearUnmarkedArea(uint x, uint y)	// returns true if a mine was revealed
 {
-	for(int scanX = x - 1; scanX <= (int)x + 1; ++scanX)	// go through the 3x3 area around a location and reveal unmarked squares
-		for(int scanY = y - 1; scanY <= (int)y + 1; ++scanY)
-		{
-			if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
-				continue;
+	if(revealed[x][y])
+	{
+		bool returnValue = false;
+		for(int scanX = x - 1; scanX <= (int)x + 1; ++scanX)	// go through the 3x3 area around a location and reveal unmarked squares
+			for(int scanY = y - 1; scanY <= (int)y + 1; ++scanY)
+			{
+				if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
+					continue;
 
-			if(!revealed[(uint)scanX][(uint)scanY] && !marked[(uint)scanX][(uint)scanY])
-				if(revealSpot(scanX, scanY))
-					return true;
-		}
+				if(!revealed[(uint)scanX][(uint)scanY] && !marked[(uint)scanX][(uint)scanY])
+					if(revealSpot(scanX, scanY))
+						returnValue = true;
+			}
 
+			return returnValue;
+	}
+	else
+	{
 		return false;
+	}
 }
 ostream& operator<<(ostream& os, const Field& field)
 {
@@ -190,7 +203,7 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 				if(mines[x][y])
 				{
 					sf::Sprite mine(Resources::getInstance().mine);
-					mine.setPosition((float)x * areaSideLength, (float)y * areaSideLength);
+					mine.setPosition((float)x * areaSideLength + position.x, (float)y * areaSideLength + position.y);
 					target.draw(mine);
 				}
 				else
@@ -204,12 +217,12 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 				if(marked[x][y])
 				{
 					sf::Sprite mark(Resources::getInstance().mark);
-					mark.setPosition((float)x * mark.getTexture()->getSize().x, (float)y * mark.getTexture()->getSize().x);
+					mark.setPosition((float)x * areaSideLength + position.x, (float)y * areaSideLength + position.y);
 					target.draw(mark);
 				}
 			}
 
-			sf::FloatRect rect((float)x * areaSideLength, (float)y * areaSideLength, (float)areaSideLength, (float)areaSideLength);
+			sf::FloatRect rect((float)x * areaSideLength + position.x, (float)y * areaSideLength + position.y, (float)areaSideLength, (float)areaSideLength);
 			drawRectangle(target, rect, sf::Color::Black);
 		}
 
@@ -217,7 +230,10 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 }
 void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown)
 {
-	hover.setPosition((float)((uint)mousePosition.x / (uint)hover.getSize().x * (uint)hover.getSize().x), (float)((uint)mousePosition.y / (uint)hover.getSize().y * (uint)hover.getSize().y));
+	float rX = fmod(position.x, hover.getSize().x);
+	float rY = fmod(position.y, hover.getSize().y);
+	hover.setPosition((float)(((uint)mousePosition.x + (uint)rX) / (uint)hover.getSize().x * (uint)hover.getSize().x) - rX, 
+		(float)(((uint)mousePosition.y + (uint)rY) / (uint)hover.getSize().y * (uint)hover.getSize().y - rY));
 
 	for(uint x = 0; x < fieldWidth; ++x)
 		for(uint y = 0; y < fieldHeight; ++y)
@@ -289,10 +305,48 @@ void Field::generateField(int zeroAdjacentMinesLocationX, int zeroAdjacentMinesL
 		{
 			if(numberOfNearbyMines[x][y] != 0)
 			{
-				textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.timesFont, 20);
-				textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength, (y + 0.5f) * areaSideLength - 3);
+				textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.squareFont, 20);
+				textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength + position.x, (y + 0.5f) * areaSideLength - 3 + position.y);
 				textNumbers[x][y].setColor(sf::Color::Black);
 				centerOrigin(textNumbers[x][y]);
 			}
 		}
+}
+bool Field::isVictoryReached()
+{
+	return numberOfUnrevealedSpaces() == numberOfMines;
+}
+bool Field::isDefeatReached()
+{
+	for(uint x = 0; x < fieldWidth; ++x)	// go through entire field and see if a mine was revealed
+		for(uint y = 0; y < fieldHeight; ++y)
+		{
+			if(revealed[x][y] && mines[x][y])
+				return true;
+		}
+
+	return false;
+}
+void Field::setFieldPosition(sf::Vector2f position)
+{
+	this->position = position;
+	Resources& resources = Resources::getInstance();
+	uint areaSideLength = resources.area.getSize().y;
+
+	background.setPosition(position);
+
+	for(uint x = 0; x < fieldWidth; ++x)	// set the position for all the squares and all the text digits
+		for(uint y = 0; y < fieldHeight; ++y)
+		{
+			buttonsVisual[x][y].setPosition((float)x * areaSideLength + position.x, (float)y * areaSideLength + position.y);
+			buttonsLMB[x][y].setPosition((float)x * areaSideLength + position.x, (float)y * areaSideLength + position.y);
+			buttonsRMB[x][y].setPosition((float)x * areaSideLength + position.x, (float)y * areaSideLength + position.y);
+			buttonsMMB[x][y].setPosition((float)x * areaSideLength + position.x, (float)y * areaSideLength + position.y);
+			textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength + position.x, (y + 0.5f) * areaSideLength - 3 + position.y);
+			centerOrigin(textNumbers[x][y]);
+		}
+}
+void Field::setFieldPosition(float positionX, float positionY)
+{
+	setFieldPosition(sf::Vector2f(positionX, positionY));
 }

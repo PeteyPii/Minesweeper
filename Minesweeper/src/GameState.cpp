@@ -2,6 +2,7 @@
 
 #include <SFML/System.hpp>
 
+#include "Globals.h"
 #include "MinesweeperApp.h"
 #include "Resources.h"
 #include "Settings.h"
@@ -70,6 +71,8 @@ void GameState::eventKeyPressed(sf::Event keyEvent)
 {
 	if(keyEvent.key.code == sf::Keyboard::Escape)
 		back();
+	else if(keyEvent.key.code == sf::Keyboard::R)
+		newGame();
 }
 void GameState::updateButtons(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown)
 {
@@ -80,21 +83,25 @@ void GameState::newGame()
 	firstMove = true;
 	field = Field(Settings::getNumberOfMines(), 
 		Settings::getFieldWidth(), 
-		Settings::getFieldHeight());
+		Settings::getFieldHeight(),
+		true);
+	field.setFieldPosition((float)fieldMargin, (float)fieldMargin);
 
 	MinesweeperApp& app = MinesweeperApp::getInstance();
 	if(app.currentState == &app.gameState)
 	{
 		sf::View view;
-		view.setSize((float)field.fieldWidth * Resources::getInstance().area.getSize().y,
-			(float)field.fieldHeight * Resources::getInstance().area.getSize().y);
-		view.setCenter((float)field.fieldWidth * Resources::getInstance().area.getSize().y * 0.5f,
-			(float)field.fieldHeight * Resources::getInstance().area.getSize().y * 0.5f);
+		view.setSize((float)field.fieldWidth * Resources::getInstance().area.getSize().y + 2 * fieldMargin,
+			(float)field.fieldHeight * Resources::getInstance().area.getSize().y + 2 * fieldMargin);
+		view.setCenter(view.getSize().x * 0.5f,
+			view.getSize().y * 0.5f);
 		app.window.setView(view);
 	}
 		
 }
 void GameState::back()
 {
-
+	MinesweeperApp& app = MinesweeperApp::getInstance();
+	app.window.setView(app.window.getDefaultView());
+	app.currentState = &app.mainMenuState;
 }

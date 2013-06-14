@@ -6,7 +6,7 @@ class Resources
 {
 public:
 	sf::Texture background, mine, mark, area, blank;
-	sf::Font timesFont;
+	sf::Font timesFont, squareFont;
 
 	~Resources();
 

@@ -15,5 +15,7 @@ public:
 	virtual void unhovered();
 	virtual void hovered();
 	virtual void clicked();
+	void setPosition(sf::Vector2f position);
+	void setPosition(float positionX, float positionY);
 	void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 };

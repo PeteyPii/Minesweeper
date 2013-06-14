@@ -23,5 +23,6 @@ void Resources::loadResources()
 	blank.loadFromFile("resources/images/blank.png");
 
 	timesFont.loadFromFile("resources/fonts/times.ttf");
+	squareFont.loadFromFile("resources/fonts/Square.ttf");
 }
 

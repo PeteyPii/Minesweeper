@@ -14,6 +14,8 @@ const uint defaultFieldWidth = 20,	// default number of columns for a field
 	defaultWindowWidth = 512,
 	defualtWindowHeight = 512;
 
+const uint fieldMargin = 48;	// amount of space to have around the drawn field
+
 void centerOrigin(sf::Text& text);		// shifts text over so it is center aligned
 std::string numberToString(uint number);
 void drawRectangle(sf::RenderTarget &target, sf::FloatRect rect, sf::Color colour);
