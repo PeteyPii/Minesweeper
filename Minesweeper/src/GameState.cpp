@@ -1,7 +1,5 @@
 #include "GameState.h"
 
-#include <SFML/System.hpp>
-
 #include "Globals.h"
 #include "MinesweeperApp.h"
 #include "Resources.h"
@@ -16,14 +14,16 @@ GameState::GameState()
 	rightButtonDown = false;
 	middleButtonDown = false;
 	inputReady = false;
+	gameBegan = false;
 
 	Resources& resources = Resources::getInstance();
 
 	background = sf::Sprite(resources.background);
-	timeElapsedText = sf::Text("0", resources.squareFont, 0);
-	minesLeft = sf::Text("0", resources.squareFont, 0);
-	timeElapsedTitle = sf::Text("Time: ", resources.timesFont, 0);
-	minesLeftTitle = sf::Text("Mines Left: ", resources.timesFont, 0);
+	timeElapsedText = sf::Text("", resources.squareFont, 0);
+	minesLeft = sf::Text("", resources.squareFont, 0);
+	centerOrigin(minesLeft);
+	timeElapsedTitle = sf::Text("Time: ", resources.squareFont, 0);
+	minesLeftTitle = sf::Text("Mines Left: ", resources.squareFont, 0);
 }
 GameState::~GameState()
 {
@@ -33,6 +33,12 @@ void GameState::step()
 {
 	if(!inputReady)
 		inputReady = true;
+
+	if(gameBegan)
+	{
+		timeElapsed += clock.restart();
+		timeElapsedText.setString(numberToString((uint)timeElapsed.asSeconds()));
+	}
 }
 void GameState::draw()
 {
@@ -44,6 +50,8 @@ void GameState::draw()
 	app.window.draw(field);
 	app.window.draw(timeElapsedTitle);
 	app.window.draw(timeElapsedText);
+	app.window.draw(minesLeftTitle);
+	app.window.draw(minesLeft);
 
 	app.window.display();
 }
@@ -63,6 +71,12 @@ void GameState::eventMouseButtonPressed(sf::Event mouseEvent)
 			middleButtonDown = true;
 
 		updateButtons(MinesweeperApp::getInstance().window.mapPixelToCoords(sf::Vector2i(mouseEvent.mouseButton.x, mouseEvent.mouseButton.y)), leftButtonDown, rightButtonDown, middleButtonDown);
+
+		if(field.numberOfRevealedSpaces() != 0 && !gameBegan)
+		{
+			clock.restart();
+			gameBegan = true;
+		}
 	}
 }
 void GameState::eventMouseButtonReleased(sf::Event mouseEvent)
@@ -77,6 +91,12 @@ void GameState::eventMouseButtonReleased(sf::Event mouseEvent)
 			middleButtonDown = false;
 
 		updateButtons(MinesweeperApp::getInstance().window.mapPixelToCoords(sf::Vector2i(mouseEvent.mouseButton.x, mouseEvent.mouseButton.y)), leftButtonDown, rightButtonDown, middleButtonDown);
+
+		if(field.numberOfRevealedSpaces() != 0 && !gameBegan)
+		{
+			clock = sf::Clock();
+			gameBegan = true;
+		}
 	}
 }
 void GameState::eventKeyPressed(sf::Event keyEvent)
@@ -92,6 +112,8 @@ void GameState::updateButtons(sf::Vector2f mousePosition, bool isLeftDown, bool 
 }
 void GameState::newGame()
 {
+	gameBegan = false;
+	timeElapsed = timeElapsed.Zero;
 	field = Field(Settings::getNumberOfMines(), 
 		Settings::getFieldWidth(), 
 		Settings::getFieldHeight(),
@@ -110,16 +132,27 @@ void GameState::newGame()
 
 		background.setScale(view.getSize().x / background.getTexture()->getSize().x, 
 			view.getSize().y / background.getTexture()->getSize().y);
-
 		
-		minesLeft.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
 		timeElapsedTitle.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
-		timeElapsedTitle.setPosition(view.getSize().x * 0.3f, view.getSize().y - fieldMargin * 0.5f);
+		timeElapsedTitle.setPosition(view.getSize().x * 0.3f, view.getSize().y - fieldMargin * 0.6f);
 		centerOrigin(timeElapsedTitle);
 
 		timeElapsedText.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
-		timeElapsedText.setPosition(timeElapsedTitle.getGlobalBounds().left + timeElapsedTitle.getGlobalBounds().width + 5.0f, timeElapsedTitle.getGlobalBounds().top);
+		timeElapsedText.setString("0");
+		centerOrigin(timeElapsedText);
+		timeElapsedText.setPosition(timeElapsedTitle.getGlobalBounds().left + timeElapsedTitle.getGlobalBounds().width + 10.0f, 
+			view.getSize().y - fieldMargin * 0.6f);
+
 		minesLeftTitle.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
+		minesLeftTitle.setPosition(view.getSize().x * 0.6f, view.getSize().y - fieldMargin * 0.6f);
+		centerOrigin(minesLeftTitle);
+
+		minesLeft.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
+		minesLeft.setString("0");		// for the origin
+		centerOrigin(minesLeft);
+		minesLeft.setString(numberToString(field.numberOfMines));
+		minesLeft.setPosition(minesLeftTitle.getGlobalBounds().left + minesLeftTitle.getGlobalBounds().width + 10.0f, 
+			view.getSize().y - fieldMargin * 0.6f);
 	}
 		
 }

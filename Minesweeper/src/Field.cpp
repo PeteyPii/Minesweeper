@@ -17,16 +17,16 @@ const unsigned char Field::verticalDash = 186;
 const unsigned char Field::horizontalDash = 205;
 const unsigned char Field::marginSpacer = 249;
 const sf::Color Field::backgroundColour = sf::Color(190, 190, 255, 255);
-const sf::Color Field::numberColours[] = {sf::Color(0, 0, 0, 0), 
-	sf::Color(128, 128, 255, 255),
-	sf::Color(128, 255, 128, 255),
-	sf::Color(255, 128, 128, 255),
-	sf::Color(0, 0, 255, 255),
-	sf::Color(128, 0, 128, 255),
-	sf::Color(0, 128, 128, 255),
-	sf::Color(128, 128, 255, 255),
-	sf::Color(128, 128, 128, 255),
-	sf::Color(0, 0, 0, 0)};
+const sf::Color Field::numberColours[] = {sf::Color(0, 0, 0, 0),	// 0
+	sf::Color(100, 100, 255, 255),	// 1
+	sf::Color(128, 255, 128, 255),	// 2
+	sf::Color(255, 40, 40, 255),	// 3
+	sf::Color(0, 0, 255, 255),		// 4				
+	sf::Color(128, 0, 128, 255),	// 5
+	sf::Color(0, 128, 128, 255),	// 6
+	sf::Color(128, 128, 255, 255),	// 7
+	sf::Color(128, 128, 128, 255),	// 8
+	sf::Color(0, 0, 0, 0)};			// 9
 
 Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, bool firstMoveZero)
 	: mines(fieldWidth, vector<bool>(fieldHeight, false)),
@@ -236,7 +236,9 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 			drawRectangle(target, rect, sf::Color::Black);
 		}
 
-	target.draw(hover);
+	if(hover.getPosition().x >= position.x && hover.getPosition().x < position.x + fieldWidth * areaSideLength && 
+		hover.getPosition().y >= position.y && hover.getPosition().y < position.y + fieldHeight * areaSideLength)
+		target.draw(hover);
 }
 void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown)
 {

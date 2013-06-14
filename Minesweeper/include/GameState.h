@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>]
+#include <SFML/System.hpp>
 
 #include "Field.h"
 #include "State.h"
@@ -16,7 +16,9 @@ public:
 	sf::Sprite background;
 	sf::Text timeElapsedText, minesLeft;
 	sf::Text timeElapsedTitle, minesLeftTitle;
-	sf::Time timeElapsed, idleTime;
+	sf::Clock clock;
+	bool gameBegan;
+	sf::Time timeElapsed, totalIdleTime;
 	Field field;
 	bool leftButtonDown, rightButtonDown, middleButtonDown;
 	bool inputReady;
