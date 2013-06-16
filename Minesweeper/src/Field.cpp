@@ -27,6 +27,8 @@ const sf::Color Field::numberColours[] = {sf::Color(0, 0, 0, 0),	// 0
 	sf::Color(128, 128, 255, 255),	// 7
 	sf::Color(128, 128, 128, 255),	// 8
 	sf::Color(0, 0, 0, 0)};			// 9
+const sf::Color Field::hoverColour = sf::Color(255, 255, 255, 78);
+const sf::Color Field::clickedColour = sf::Color(0, 0, 0, 60);
 
 Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, bool firstMoveZero)
 	: mines(fieldWidth, vector<bool>(fieldHeight, false)),
@@ -73,7 +75,7 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, bool firstMo
 	background.setOutlineThickness(0.0f);
 
 	hover = sf::RectangleShape(sf::Vector2f((float)areaSideLength, (float)areaSideLength));
-	hover.setFillColor(sf::Color(255, 255, 255, 78));
+	hover.setFillColor(hoverColour);
 	hover.setOutlineThickness(0.0f);
 	hover.setPosition(-100.0f * areaSideLength, -100.0f * areaSideLength);
 }
@@ -201,6 +203,20 @@ int Field::numberOfUnrevealedSpaces()
 	// number of unrevealed spaces is the field area minus the number of revealed spaces
 	return (int)fieldHeight * (int)fieldWidth - numberOfRevealedSpaces();
 }
+uint Field::numberOfDetectedMines()
+{
+	// go through the field and check if a location has a mine
+	uint count = 0;
+	for(uint x = 0; x < fieldWidth; ++x)
+		for(uint y = 0; y < fieldHeight; ++y)
+			if(marked[x][y])
+				++count;
+	return count;
+}
+int Field::numberOfUndetectedMines()
+{
+	return (int)(numberOfMines - numberOfDetectedMines());
+}
 void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 {
 	target.draw(background);
@@ -242,6 +258,10 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 }
 void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown)
 {
+	if(isLeftDown || isRightDown || isMiddleDown)
+		hover.setFillColor(clickedColour);
+	else
+		hover.setFillColor(hoverColour);
 	float rX = fmod(position.x, hover.getSize().x);
 	float rY = fmod(position.y, hover.getSize().y);
 	hover.setPosition((float)(((uint)mousePosition.x + (uint)rX) / (uint)hover.getSize().x * (uint)hover.getSize().x) - rX, 
@@ -323,7 +343,7 @@ void Field::generateField(int zeroAdjacentMinesLocationX, int zeroAdjacentMinesL
 }
 bool Field::isVictoryReached()
 {
-	return numberOfUnrevealedSpaces() == numberOfMines;
+	return numberOfUnrevealedSpaces() == numberOfMines && !isDefeatReached();
 }
 bool Field::isDefeatReached()
 {

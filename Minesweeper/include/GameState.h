@@ -11,7 +11,7 @@ class Field;
 class GameState : public State
 {
 public:
-	const static float infoTextSizeFactor;
+	const static float infoTextSizeFactor, gameOverTextFactor;
 
 	sf::Sprite background;
 	sf::Text timeElapsedText, minesLeft;
@@ -22,6 +22,9 @@ public:
 	Field field;
 	bool leftButtonDown, rightButtonDown, middleButtonDown;
 	bool inputReady;
+	bool isVictory, isDefeat;
+	sf::Text playAgainText, victoryText, defeatText;
+	sf::RectangleShape backgroundShade;
 
 	GameState();
 	~GameState();

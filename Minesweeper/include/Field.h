@@ -18,6 +18,7 @@ public:
 		marginSpacer;						// character between the margin dashes
 	const static sf::Color backgroundColour;	// colour the numbers are drawn an top of
 	const static sf::Color numberColours[10];
+	const static sf::Color hoverColour, clickedColour;
 
 	std::vector<std::vector<bool> > mines;				// true for a mine in the spot
 	std::vector<std::vector<bool> > revealed;			// true for a revealed square
@@ -69,6 +70,14 @@ public:
 	// function that counts the number of spaces on the field that have not been revealed
 	// return: number of spaces on the field that have not been revealed
 	int numberOfUnrevealedSpaces();
+
+	// function that counts the number of marked squares on the field
+	// return: number of squares on the field that are marked
+	unsigned int numberOfDetectedMines();
+
+	// function that counts the number of unmarked mines on the field
+	// return: number of marked squares subtracted from the number of mines
+	int numberOfUndetectedMines();
 
 	// function that draws the field to a sf::RenderTarget
 	// target: sf::RenderTarget that will be drawn on
