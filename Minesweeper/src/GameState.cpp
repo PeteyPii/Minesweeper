@@ -43,6 +43,10 @@ void GameState::step()
 		timeElapsed += clock.restart();
 		timeElapsedText.setString(numberToString(timeElapsed.asSeconds()));
 	}
+	else
+	{
+		clock.restart();
+	}
 }
 void GameState::draw()
 {
@@ -146,6 +150,10 @@ void GameState::eventMouseButtonReleased(sf::Event mouseEvent)
 		else if(field.isVictoryReached())
 		{
 			isVictory = true;
+
+			Settings::setNumberOfFieldWins(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getNumberOfFieldWins(field.fieldWidth, field.fieldHeight, field.numberOfMines) + 1);
+			Settings::setTotalFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getTotalFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines) + timeElapsed.asSeconds());
+			Settings::setBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines, min(Settings::getBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines), timeElapsed.asSeconds()));
 		}
 	}
 }
@@ -155,7 +163,7 @@ void GameState::eventKeyPressed(sf::Event keyEvent)
 		back();
 	else if(keyEvent.key.code == sf::Keyboard::R)
 	{
-		if(gameBegan)
+		if(gameBegan && !isVictory && !isDefeat)
 			Settings::setNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines) + 1);
 		newGame();
 	}

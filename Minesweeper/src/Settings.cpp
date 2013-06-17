@@ -175,7 +175,7 @@ void Settings::setTotalFieldTime(uint fieldWidth, uint fieldHeight, uint numberO
 {
 	int fieldTime = (int)(1000.0f * totalFieldTime);
 	stringstream converter;
-	converter << "TotalWins" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
+	converter << "TotalTime" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
 	if(settings.find(converter.str()) == settings.end())
 		settings.insert(pair<string, int>(converter.str(), fieldTime));
 	else
@@ -186,7 +186,7 @@ void Settings::setBestFieldTime(uint fieldWidth, uint fieldHeight, uint numberOf
 {
 	int fieldTime = (int)(1000.0f * bestFieldTime);
 	stringstream converter;
-	converter << "TotalWins" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
+	converter << "BestTime" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
 	if(settings.find(converter.str()) == settings.end())
 		settings.insert(pair<string, int>(converter.str(), fieldTime));
 	else
