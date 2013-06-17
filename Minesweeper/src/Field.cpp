@@ -79,6 +79,10 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, bool firstMo
 	hover.setOutlineThickness(0.0f);
 	hover.setPosition(-100.0f * areaSideLength, -100.0f * areaSideLength);
 }
+Field::~Field()
+{
+
+}
 bool Field::revealSpot(int x, int y)
 {
 	if(firstMove)

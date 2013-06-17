@@ -40,6 +40,9 @@ public:
 	// firstMoveZero: whether or not the first revealed square will have zero nearby mines, true for yes
 	Field(unsigned int numberOfMines, unsigned int fieldWidth, unsigned int fieldHeight, bool firstMoveZero = false);
 
+	// class destructor
+	~Field();
+
 	// function to reveal a location on the field
 	// return: true if a mine is revealed
 	// x: x-coordinate of location to reveal

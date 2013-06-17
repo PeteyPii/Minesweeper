@@ -61,6 +61,22 @@ void MinesweeperApp::begin()
 			{
 				currentState->eventWindowResized(event);
 			}
+			else if(event.type == sf::Event::MouseLeft)
+			{
+				currentState->eventMouseExited();
+			}
+			else if(event.type == sf::Event::MouseEntered)
+			{
+				currentState->eventMouseEntered();
+			}
+			else if(event.type == sf::Event::LostFocus)
+			{
+				currentState->eventWindowUnfocused();
+			}
+			else if(event.type == sf::Event::GainedFocus)
+			{
+				currentState->eventWindowFocused();
+			}
 			else if(event.type == sf::Event::Closed)
 			{
 				window.close();

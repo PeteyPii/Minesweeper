@@ -107,3 +107,89 @@ uint Settings::getWindowHeight()
 {
 	return settings.find("windowHeight")->second;
 }
+uint Settings::getNumberOfFieldGames(uint fieldWidth, uint fieldHeight, uint numberOfMines)
+{
+	stringstream converter;
+	converter << "TotalGames" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
+	if(settings.find(converter.str()) == settings.end())
+	{
+		settings.insert(pair<string, int>(converter.str(), 0));
+		saveSettings();
+	}
+	return settings.find(converter.str())->second;
+}
+uint Settings::getNumberOfFieldWins(uint fieldWidth, uint fieldHeight, uint numberOfMines)
+{
+	stringstream converter;
+	converter << "TotalWins" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
+	if(settings.find(converter.str()) == settings.end())
+	{
+		settings.insert(pair<string, int>(converter.str(), 0));
+		saveSettings();
+	}
+	return settings.find(converter.str())->second;
+}
+float Settings::getTotalFieldTime(uint fieldWidth, uint fieldHeight, uint numberOfMines)
+{
+	stringstream converter;
+	converter << "TotalTime" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
+	if(settings.find(converter.str()) == settings.end())
+	{
+		settings.insert(pair<string, int>(converter.str(), 0));
+		saveSettings();
+	}
+	return 0.001f * settings.find(converter.str())->second;
+}
+float Settings::getBestFieldTime(uint fieldWidth, uint fieldHeight, uint numberOfMines)
+{
+	stringstream converter;
+	converter << "BestTime" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
+	if(settings.find(converter.str()) == settings.end())
+	{
+		settings.insert(pair<string, int>(converter.str(), 999999));
+		saveSettings();
+	}
+	return 0.001f * settings.find(converter.str())->second;
+}
+void Settings::setNumberOfFieldGames(uint fieldWidth, uint fieldHeight, uint numberOfMines, uint numberOfGames)
+{
+	stringstream converter;
+	converter << "TotalGames" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
+	if(settings.find(converter.str()) == settings.end())
+		settings.insert(pair<string, int>(converter.str(), numberOfGames));
+	else
+		settings[converter.str()] = numberOfGames;
+	saveSettings();
+}
+void Settings::setNumberOfFieldWins(uint fieldWidth, uint fieldHeight, uint numberOfMines, uint numberOfWins)
+{
+	stringstream converter;
+	converter << "TotalWins" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
+	if(settings.find(converter.str()) == settings.end())
+		settings.insert(pair<string, int>(converter.str(), numberOfWins));
+	else
+		settings[converter.str()] = numberOfWins;
+	saveSettings();
+}
+void Settings::setTotalFieldTime(uint fieldWidth, uint fieldHeight, uint numberOfMines, float totalFieldTime)
+{
+	int fieldTime = (int)(1000.0f * totalFieldTime);
+	stringstream converter;
+	converter << "TotalWins" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
+	if(settings.find(converter.str()) == settings.end())
+		settings.insert(pair<string, int>(converter.str(), fieldTime));
+	else
+		settings[converter.str()] = fieldTime;
+	saveSettings();
+}
+void Settings::setBestFieldTime(uint fieldWidth, uint fieldHeight, uint numberOfMines, float bestFieldTime)
+{
+	int fieldTime = (int)(1000.0f * bestFieldTime);
+	stringstream converter;
+	converter << "TotalWins" << 'W' << fieldWidth << 'H' << fieldHeight << 'M' << numberOfMines;
+	if(settings.find(converter.str()) == settings.end())
+		settings.insert(pair<string, int>(converter.str(), fieldTime));
+	else
+		settings[converter.str()] = fieldTime;
+	saveSettings();
+}

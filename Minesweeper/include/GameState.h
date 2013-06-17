@@ -17,8 +17,8 @@ public:
 	sf::Text timeElapsedText, minesLeft;
 	sf::Text timeElapsedTitle, minesLeftTitle;
 	sf::Clock clock;
-	bool gameBegan;
-	sf::Time timeElapsed, totalIdleTime;
+	bool gameBegan, windowFocused;
+	sf::Time timeElapsed;
 	Field field;
 	bool leftButtonDown, rightButtonDown, middleButtonDown;
 	bool inputReady;
@@ -35,6 +35,9 @@ public:
 	virtual void eventMouseButtonPressed(sf::Event mouseEvent);
 	virtual void eventMouseButtonReleased(sf::Event mouseEvent);
 	virtual void eventKeyPressed(sf::Event keyEvent);
+	virtual void eventMouseExited();
+	virtual void eventWindowUnfocused();
+	virtual void eventWindowFocused();
 
 	void updateButtons(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown);
 

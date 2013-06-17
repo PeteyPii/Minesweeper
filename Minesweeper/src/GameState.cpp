@@ -15,6 +15,7 @@ GameState::GameState()
 	rightButtonDown = false;
 	middleButtonDown = false;
 	inputReady = false;
+	windowFocused = true;
 
 	Resources& resources = Resources::getInstance();
 
@@ -37,7 +38,7 @@ void GameState::step()
 	if(!inputReady)
 		inputReady = true;
 
-	if(gameBegan && !isVictory && !isDefeat)
+	if(gameBegan && !isVictory && !isDefeat && windowFocused)
 	{
 		timeElapsed += clock.restart();
 		timeElapsedText.setString(numberToString(timeElapsed.asSeconds()));
@@ -69,6 +70,13 @@ void GameState::draw()
 		app.window.draw(playAgainText);
 	}
 
+	if(!windowFocused)
+	{
+		app.window.draw(backgroundShade);
+		app.window.draw(backgroundShade);
+		app.window.draw(backgroundShade);
+	}
+
 	app.window.display();
 }
 void GameState::eventMouseMoved(sf::Event mouseEvent)
@@ -93,6 +101,7 @@ void GameState::eventMouseButtonPressed(sf::Event mouseEvent)
 		{
 			clock.restart();
 			gameBegan = true;
+			Settings::setNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines) + 1);
 		}
 
 		if(field.isDefeatReached())
@@ -102,6 +111,10 @@ void GameState::eventMouseButtonPressed(sf::Event mouseEvent)
 		else if(field.isVictoryReached())
 		{
 			isVictory = true;
+			
+			Settings::setNumberOfFieldWins(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getNumberOfFieldWins(field.fieldWidth, field.fieldHeight, field.numberOfMines) + 1);
+			Settings::setTotalFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getTotalFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines) + timeElapsed.asSeconds());
+			Settings::setBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines, min(Settings::getBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines), timeElapsed.asSeconds()));
 		}
 	}
 }
@@ -123,6 +136,7 @@ void GameState::eventMouseButtonReleased(sf::Event mouseEvent)
 		{
 			clock = sf::Clock();
 			gameBegan = true;
+			Settings::setNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines) + 1);
 		}
 
 		if(field.isDefeatReached())
@@ -140,7 +154,23 @@ void GameState::eventKeyPressed(sf::Event keyEvent)
 	if(keyEvent.key.code == sf::Keyboard::Escape)
 		back();
 	else if(keyEvent.key.code == sf::Keyboard::R)
+	{
+		if(gameBegan)
+			Settings::setNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines) + 1);
 		newGame();
+	}
+}
+void GameState::eventMouseExited()
+{
+	updateButtons(sf::Vector2f(-1.0f, -1.0f), leftButtonDown, rightButtonDown, middleButtonDown);
+}
+void GameState::eventWindowUnfocused()
+{
+	windowFocused = false;
+}
+void GameState::eventWindowFocused()
+{
+	windowFocused = true;
 }
 void GameState::updateButtons(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown)
 {

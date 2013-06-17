@@ -48,3 +48,19 @@ void State::eventWindowResized(sf::Event windowEvent)
 {
 
 }
+void State::eventMouseExited()
+{
+
+}
+void State::eventMouseEntered()
+{
+
+}
+void State::eventWindowUnfocused()
+{
+
+}
+void State::eventWindowFocused()
+{
+
+}

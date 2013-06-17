@@ -19,4 +19,8 @@ public:
 	virtual void eventTextEntered(sf::Event textEvent);
 	virtual void eventMouseWheelMoved(sf::Event mouseEvent);
 	virtual void eventWindowResized(sf::Event windowEvent);
+	virtual void eventMouseExited();
+	virtual void eventMouseEntered();
+	virtual void eventWindowUnfocused();
+	virtual void eventWindowFocused();
 };
