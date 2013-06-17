@@ -1,12 +1,17 @@
 #include "GameState.h"
 
+#include <sstream>
+
 #include "Globals.h"
 #include "MinesweeperApp.h"
 #include "Resources.h"
 #include "Settings.h"
 
+using namespace std;
+
 const float GameState::infoTextSizeFactor = 0.5f;
 const float GameState::gameOverTextFactor = 0.1f;
+const float GameState::statsTextSizeFactor = 0.05f;
 
 GameState::GameState()
 	: field(0, 1, 1)
@@ -55,31 +60,31 @@ void GameState::draw()
 	app.window.clear(sf::Color::White);
 
 	app.window.draw(background);
-	app.window.draw(field);
+	if(windowFocused)
+		app.window.draw(field);
 	app.window.draw(timeElapsedTitle);
 	app.window.draw(timeElapsedText);
 	app.window.draw(minesLeftTitle);
 	app.window.draw(minesLeft);
 
-	if(isDefeat)
+	if(isDefeat || isVictory)
 	{
 		app.window.draw(backgroundShade);
-		app.window.draw(defeatText);
+
+		if(isDefeat)
+			app.window.draw(defeatText);
+		else if(isVictory)
+			app.window.draw(victoryText);
+
 		app.window.draw(playAgainText);
-	}
-	else if(isVictory)
-	{
-		app.window.draw(backgroundShade);
-		app.window.draw(victoryText);
-		app.window.draw(playAgainText);
+		app.window.draw(numberOfWinsText);
+		app.window.draw(numberOfGamesText);
+		app.window.draw(bestTimeText);
+		app.window.draw(averageTimeText);
 	}
 
 	if(!windowFocused)
-	{
 		app.window.draw(backgroundShade);
-		app.window.draw(backgroundShade);
-		app.window.draw(backgroundShade);
-	}
 
 	app.window.display();
 }
@@ -111,6 +116,7 @@ void GameState::eventMouseButtonPressed(sf::Event mouseEvent)
 		if(field.isDefeatReached())
 		{
 			isDefeat = true;
+			updateStatsTexts();
 		}
 		else if(field.isVictoryReached())
 		{
@@ -118,7 +124,9 @@ void GameState::eventMouseButtonPressed(sf::Event mouseEvent)
 			
 			Settings::setNumberOfFieldWins(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getNumberOfFieldWins(field.fieldWidth, field.fieldHeight, field.numberOfMines) + 1);
 			Settings::setTotalFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getTotalFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines) + timeElapsed.asSeconds());
-			Settings::setBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines, min(Settings::getBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines), timeElapsed.asSeconds()));
+			Settings::setBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines, std::min(Settings::getBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines), timeElapsed.asSeconds()));
+
+			updateStatsTexts();
 		}
 	}
 }
@@ -146,6 +154,7 @@ void GameState::eventMouseButtonReleased(sf::Event mouseEvent)
 		if(field.isDefeatReached())
 		{
 			isDefeat = true;
+			updateStatsTexts();
 		}
 		else if(field.isVictoryReached())
 		{
@@ -153,7 +162,9 @@ void GameState::eventMouseButtonReleased(sf::Event mouseEvent)
 
 			Settings::setNumberOfFieldWins(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getNumberOfFieldWins(field.fieldWidth, field.fieldHeight, field.numberOfMines) + 1);
 			Settings::setTotalFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getTotalFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines) + timeElapsed.asSeconds());
-			Settings::setBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines, min(Settings::getBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines), timeElapsed.asSeconds()));
+			Settings::setBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines, std::min(Settings::getBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines), timeElapsed.asSeconds()));
+
+			updateStatsTexts();
 		}
 	}
 }
@@ -183,6 +194,39 @@ void GameState::eventWindowFocused()
 void GameState::updateButtons(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown)
 {
 	field.updateFieldClicks(mousePosition, isLeftDown, isRightDown, isMiddleDown);
+}
+void GameState::updateStatsTexts()
+{
+	MinesweeperApp& app = MinesweeperApp::getInstance();
+	Resources& resources = Resources::getInstance();
+
+	stringstream winsText, gamesText, bestText, averageText;
+	uint numberOfWins = Settings::getNumberOfFieldWins(field.fieldWidth, field.fieldHeight, field.numberOfMines);
+
+	winsText << "Games won: " << numberOfWins;
+	gamesText << "Number of games: " << Settings::getNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines);
+	if(numberOfWins > 0)
+	{
+		bestText << "Best time: " << Settings::getBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines);
+		averageText << "Average time: " << numberToString(Settings::getTotalFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines) / numberOfWins);
+	}
+	else
+	{
+		bestText << "Best time: N/A";
+		averageText << "Average time: N/A";
+	}
+
+	const sf::View& view = app.window.getView();
+	uint characterSize = (uint)(std::min(view.getSize().x, view.getSize().y) * statsTextSizeFactor);
+
+	numberOfWinsText = sf::Text(winsText.str(), resources.squareFont, characterSize);
+	numberOfWinsText.setPosition(0.025f * view.getSize().x, 0.775f * view.getSize().y);
+	numberOfGamesText = sf::Text(gamesText.str(), resources.squareFont, characterSize);
+	numberOfGamesText.setPosition(0.025f * view.getSize().x, 0.825f * view.getSize().y);
+	bestTimeText = sf::Text(bestText.str(), resources.squareFont, characterSize);
+	bestTimeText.setPosition(0.025f * view.getSize().x, 0.875f * view.getSize().y);
+	averageTimeText = sf::Text(averageText.str(), resources.squareFont, characterSize);
+	averageTimeText.setPosition(0.025f * view.getSize().x, 0.925f * view.getSize().y);
 }
 void GameState::newGame()
 {
@@ -230,16 +274,16 @@ void GameState::newGame()
 		minesLeft.setPosition(minesLeftTitle.getGlobalBounds().left + minesLeftTitle.getGlobalBounds().width + 10.0f, 
 			view.getSize().y - fieldMargin * 0.6f);
 
-		playAgainText.setCharacterSize((uint)(min(view.getSize().x, view.getSize().y) * gameOverTextFactor * 0.5f));
-		playAgainText.setPosition(view.getSize().x * 0.5f, view.getSize().y * 0.6f);
+		playAgainText.setCharacterSize((uint)(std::min(view.getSize().x, view.getSize().y) * gameOverTextFactor * 0.5f));
+		playAgainText.setPosition(view.getSize().x * 0.5f, view.getSize().y * 0.4f);
 		centerOrigin(playAgainText);
 		
-		victoryText.setCharacterSize((uint)(min(view.getSize().x, view.getSize().y) * gameOverTextFactor));
-		victoryText.setPosition(view.getSize().x * 0.5f, view.getSize().y * 0.4f);
+		victoryText.setCharacterSize((uint)(std::min(view.getSize().x, view.getSize().y) * gameOverTextFactor));
+		victoryText.setPosition(view.getSize().x * 0.5f, view.getSize().y * 0.2f);
 		centerOrigin(victoryText);
 
-		defeatText.setCharacterSize((uint)(min(view.getSize().x, view.getSize().y) * gameOverTextFactor));
-		defeatText.setPosition(view.getSize().x * 0.5f, view.getSize().y * 0.4f);
+		defeatText.setCharacterSize((uint)(std::min(view.getSize().x, view.getSize().y) * gameOverTextFactor));
+		defeatText.setPosition(view.getSize().x * 0.5f, view.getSize().y * 0.2f);
 		centerOrigin(defeatText);
 
 		backgroundShade.setSize(view.getSize());

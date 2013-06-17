@@ -11,7 +11,7 @@ class Field;
 class GameState : public State
 {
 public:
-	const static float infoTextSizeFactor, gameOverTextFactor;
+	const static float infoTextSizeFactor, gameOverTextFactor, statsTextSizeFactor;
 
 	sf::Sprite background;
 	sf::Text timeElapsedText, minesLeft;
@@ -24,6 +24,7 @@ public:
 	bool inputReady;
 	bool isVictory, isDefeat;
 	sf::Text playAgainText, victoryText, defeatText;
+	sf::Text numberOfWinsText, numberOfGamesText, bestTimeText, averageTimeText;
 	sf::RectangleShape backgroundShade;
 
 	GameState();
@@ -40,6 +41,7 @@ public:
 	virtual void eventWindowFocused();
 
 	void updateButtons(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown);
+	void updateStatsTexts();
 
 	void newGame();
 	void back();

@@ -24,7 +24,7 @@ std::string numberToString(T number)
 	std::stringstream converter;
 	converter.precision(3);
 	converter.setf(std::ios::fixed, std::ios::floatfield);
-	converter << number;
+	converter << std::fixed << number;
 	return converter.str();
 }
 void drawRectangle(sf::RenderTarget& target, sf::FloatRect rect, sf::Color colour);
