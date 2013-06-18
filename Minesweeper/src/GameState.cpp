@@ -27,8 +27,10 @@ GameState::GameState()
 	background = sf::Sprite(resources.background);
 	timeElapsedText = sf::Text("", resources.squareFont, 0);
 	minesLeft = sf::Text("", resources.squareFont, 0);
-	timeElapsedTitle = sf::Text("Time: ", resources.squareFont, 0);
-	minesLeftTitle = sf::Text("Mines Left: ", resources.squareFont, 0);
+	timeElapsedTitle = sf::Text("T: ", resources.squareFont, 0);
+	timeElapsedTitle.setColor(sf::Color(170, 170, 170, 255));
+	minesLeftTitle = sf::Text("M: ", resources.squareFont, 0);
+	minesLeftTitle.setColor(sf::Color(170, 170, 170, 255));
 	playAgainText = sf::Text("Press R to play again", resources.squareFont, 0);
 	victoryText = sf::Text("You won!", resources.squareFont, 0);
 	defeatText = sf::Text("You lost...", resources.squareFont, 0);
@@ -60,7 +62,7 @@ void GameState::draw()
 	app.window.clear(sf::Color::White);
 
 	app.window.draw(background);
-	if(windowFocused)
+	if(windowFocused || isVictory || isDefeat)
 		app.window.draw(field);
 	app.window.draw(timeElapsedTitle);
 	app.window.draw(timeElapsedText);
@@ -76,14 +78,16 @@ void GameState::draw()
 		else if(isVictory)
 			app.window.draw(victoryText);
 
+		app.window.draw(lastTimeText);
 		app.window.draw(playAgainText);
 		app.window.draw(numberOfWinsText);
 		app.window.draw(numberOfGamesText);
+		app.window.draw(winPercentageText);
 		app.window.draw(bestTimeText);
 		app.window.draw(averageTimeText);
 	}
 
-	if(!windowFocused)
+	if(!windowFocused && !isDefeat && !isVictory)
 		app.window.draw(backgroundShade);
 
 	app.window.display();
@@ -200,11 +204,19 @@ void GameState::updateStatsTexts()
 	MinesweeperApp& app = MinesweeperApp::getInstance();
 	Resources& resources = Resources::getInstance();
 
-	stringstream winsText, gamesText, bestText, averageText;
+	stringstream timeText, winsText, gamesText, percentText, bestText, averageText;
 	uint numberOfWins = Settings::getNumberOfFieldWins(field.fieldWidth, field.fieldHeight, field.numberOfMines);
+	uint numberOfGames = Settings::getNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines);
 
+	timeText << "Game time: " << numberToString(timeElapsed.asSeconds());
 	winsText << "Games won: " << numberOfWins;
-	gamesText << "Number of games: " << Settings::getNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines);
+	gamesText << "Number of games: " << numberOfGames;
+
+	if(numberOfGames > 0)
+		percentText << "Win percentage: " << numberToString((float)numberOfWins / (float)numberOfGames * 100.0f) << " %";
+	else
+		percentText << "Win percentage: N/A";
+
 	if(numberOfWins > 0)
 	{
 		bestText << "Best time: " << Settings::getBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines);
@@ -219,10 +231,14 @@ void GameState::updateStatsTexts()
 	const sf::View& view = app.window.getView();
 	uint characterSize = (uint)(std::min(view.getSize().x, view.getSize().y) * statsTextSizeFactor);
 
+	lastTimeText = sf::Text(timeText.str(), resources.squareFont, characterSize);
+	lastTimeText.setPosition(0.025f * view.getSize().x, 0.675f * view.getSize().y);
 	numberOfWinsText = sf::Text(winsText.str(), resources.squareFont, characterSize);
-	numberOfWinsText.setPosition(0.025f * view.getSize().x, 0.775f * view.getSize().y);
+	numberOfWinsText.setPosition(0.025f * view.getSize().x, 0.725f * view.getSize().y);
 	numberOfGamesText = sf::Text(gamesText.str(), resources.squareFont, characterSize);
-	numberOfGamesText.setPosition(0.025f * view.getSize().x, 0.825f * view.getSize().y);
+	numberOfGamesText.setPosition(0.025f * view.getSize().x, 0.775f * view.getSize().y);
+	winPercentageText = sf::Text(percentText.str(), resources.squareFont, characterSize);
+	winPercentageText.setPosition(0.025f * view.getSize().x, 0.825f * view.getSize().y);
 	bestTimeText = sf::Text(bestText.str(), resources.squareFont, characterSize);
 	bestTimeText.setPosition(0.025f * view.getSize().x, 0.875f * view.getSize().y);
 	averageTimeText = sf::Text(averageText.str(), resources.squareFont, characterSize);

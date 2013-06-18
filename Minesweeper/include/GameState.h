@@ -24,7 +24,7 @@ public:
 	bool inputReady;
 	bool isVictory, isDefeat;
 	sf::Text playAgainText, victoryText, defeatText;
-	sf::Text numberOfWinsText, numberOfGamesText, bestTimeText, averageTimeText;
+	sf::Text lastTimeText, winPercentageText, numberOfWinsText, numberOfGamesText, bestTimeText, averageTimeText;
 	sf::RectangleShape backgroundShade;
 
 	GameState();
