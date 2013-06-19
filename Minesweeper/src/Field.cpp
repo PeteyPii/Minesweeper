@@ -122,7 +122,18 @@ void Field::markSpot(uint x, uint y)
 }
 bool Field::clearUnmarkedArea(uint x, uint y)	// returns true if a mine was revealed
 {
-	if(revealed[x][y])
+	uint count = 0;
+	for(int scanX = x - 1; scanX <= (int)x + 1; ++scanX)
+		for(int scanY = y - 1; scanY <= (int)y + 1; ++scanY)
+		{
+			if(scanX < 0 || scanX >= (int)fieldWidth || scanY < 0 || scanY >= (int)fieldHeight)
+				continue;
+
+			if(marked[scanX][scanY])
+				++count;
+		}
+
+	if(revealed[x][y] && count == numberOfNearbyMines[x][y])
 	{
 		bool returnValue = false;
 		for(int scanX = x - 1; scanX <= (int)x + 1; ++scanX)	// go through the 3x3 area around a location and reveal unmarked squares
@@ -280,7 +291,7 @@ void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool 
 			if(buttonsRMB[x][y].updateAndGetClicked(mousePosition, isRightDown))	// right click to mark squares
 				markSpot(x, y);
 
-			if(buttonsMMB[x][y].updateAndGetClicked(mousePosition, isMiddleDown))	// middle click to clear around a square
+			if(buttonsMMB[x][y].updateAndGetClicked(mousePosition, isMiddleDown || (isRightDown && isLeftDown)))	// middle click or both left and right click to clear around a square
 				clearUnmarkedArea(x, y);
 
 			buttonsVisual[x][y].updateAndGetClicked(mousePosition, isLeftDown || isRightDown || isMiddleDown);	// call to draw the square properly
