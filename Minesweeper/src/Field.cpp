@@ -68,6 +68,9 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, bool firstMo
 			buttonsLMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
 			buttonsRMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
 			buttonsMMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
+
+			sf::Uint8 colour = (sf::Uint8)(255.0f * (0.6f + 0.4f * sqrt((float)(x * areaSideLength + y * areaSideLength)) / sqrt((float)(fieldWidth * areaSideLength + fieldHeight * areaSideLength + 2 * areaSideLength))));
+			buttonsVisual[x][y].sprite.setColor(sf::Color(colour, colour, colour, 255));
 		}
 
 	background = sf::RectangleShape(sf::Vector2f((float)fieldWidth * areaSideLength, (float)fieldHeight * areaSideLength));

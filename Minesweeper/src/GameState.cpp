@@ -303,8 +303,7 @@ void GameState::newGame()
 		centerOrigin(defeatText);
 
 		backgroundShade.setSize(view.getSize());
-	}
-		
+	}	
 }
 void GameState::back()
 {
