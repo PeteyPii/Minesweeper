@@ -12,6 +12,7 @@ class GameState : public State
 {
 public:
 	const static float infoTextSizeFactor, gameOverTextFactor, statsTextSizeFactor;
+	const static float fieldMarginPercent;	// amount of space to have around the drawn field
 
 	sf::Sprite background;
 	sf::Text timeElapsedText, minesLeft;

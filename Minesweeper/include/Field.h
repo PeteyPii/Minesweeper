@@ -19,6 +19,7 @@ public:
 	const static sf::Color backgroundColour;	// colour the numbers are drawn an top of
 	const static sf::Color numberColours[10];
 	const static sf::Color hoverColour, clickedColour;
+	const static float nearbyMineNumberTextSizeFactor;
 
 	std::vector<std::vector<bool> > mines;				// true for a mine in the spot
 	std::vector<std::vector<bool> > revealed;			// true for a revealed square

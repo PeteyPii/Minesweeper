@@ -12,6 +12,7 @@ using namespace std;
 const float GameState::infoTextSizeFactor = 0.5f;
 const float GameState::gameOverTextFactor = 0.1f;
 const float GameState::statsTextSizeFactor = 0.05f;
+const float GameState::fieldMarginPercent = 0.09375f;
 
 GameState::GameState()
 	: field(0, 1, 1)
@@ -27,10 +28,10 @@ GameState::GameState()
 	background = sf::Sprite(resources.background);
 	timeElapsedText = sf::Text("", resources.squareFont, 0);
 	minesLeft = sf::Text("", resources.squareFont, 0);
-	timeElapsedTitle = sf::Text("T: ", resources.squareFont, 0);
-	timeElapsedTitle.setColor(sf::Color(170, 170, 170, 255));
-	minesLeftTitle = sf::Text("M: ", resources.squareFont, 0);
-	minesLeftTitle.setColor(sf::Color(170, 170, 170, 255));
+	timeElapsedTitle = sf::Text("Time: ", resources.squareFont, 0);
+	timeElapsedTitle.setColor(sf::Color(140, 140, 140, 255));
+	minesLeftTitle = sf::Text("Mines left: ", resources.squareFont, 0);
+	minesLeftTitle.setColor(sf::Color(140, 140, 140, 255));
 	playAgainText = sf::Text("Press R to play again", resources.squareFont, 0);
 	victoryText = sf::Text("You won!", resources.squareFont, 0);
 	defeatText = sf::Text("You lost...", resources.squareFont, 0);
@@ -254,41 +255,42 @@ void GameState::newGame()
 		Settings::getFieldWidth(), 
 		Settings::getFieldHeight(),
 		true);
-	field.setFieldPosition((float)fieldMargin, (float)fieldMargin);
 
 	MinesweeperApp& app = MinesweeperApp::getInstance();
 	if(app.currentState == &app.gameState)
 	{
 		sf::View view;
-		view.setSize((float)field.fieldWidth * Resources::getInstance().area.getSize().y + 2 * fieldMargin,
-			(float)field.fieldHeight * Resources::getInstance().area.getSize().y + 2 * fieldMargin);
+		view.setSize((float)field.fieldWidth * Resources::getInstance().area.getSize().y / (1.0f - 2.0f * fieldMarginPercent),
+			(float)field.fieldHeight * Resources::getInstance().area.getSize().y / (1.0f - 2.0f * fieldMarginPercent));
 		view.setCenter(view.getSize().x * 0.5f,
 			view.getSize().y * 0.5f);
 		app.window.setView(view);
 
 		background.setScale(view.getSize().x / background.getTexture()->getSize().x, 
 			view.getSize().y / background.getTexture()->getSize().y);
+
+		field.setFieldPosition(fieldMarginPercent * view.getSize().x, fieldMarginPercent * view.getSize().y);
 		
-		timeElapsedTitle.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
-		timeElapsedTitle.setPosition(view.getSize().x * 0.275f, view.getSize().y - fieldMargin * 0.6f);
+		timeElapsedTitle.setCharacterSize((uint)(fieldMarginPercent * view.getSize().y * infoTextSizeFactor));
+		timeElapsedTitle.setPosition(view.getSize().x * 0.225f, view.getSize().y - fieldMarginPercent * view.getSize().y * 0.6f);
 		centerOrigin(timeElapsedTitle);
 
-		timeElapsedText.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
+		timeElapsedText.setCharacterSize((uint)(fieldMarginPercent * view.getSize().y * infoTextSizeFactor));
 		timeElapsedText.setString("0");
 		centerOrigin(timeElapsedText);
-		timeElapsedText.setPosition(timeElapsedTitle.getGlobalBounds().left + timeElapsedTitle.getGlobalBounds().width + 10.0f, 
-			view.getSize().y - fieldMargin * 0.6f);
+		timeElapsedText.setPosition(timeElapsedTitle.getGlobalBounds().left + timeElapsedTitle.getGlobalBounds().width + 0.02f * view.getSize().y, 
+			view.getSize().y - fieldMarginPercent * view.getSize().y * 0.6f);
 
-		minesLeftTitle.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
-		minesLeftTitle.setPosition(view.getSize().x * 0.625f, view.getSize().y - fieldMargin * 0.6f);
+		minesLeftTitle.setCharacterSize((uint)(fieldMarginPercent * view.getSize().y * infoTextSizeFactor));
+		minesLeftTitle.setPosition(view.getSize().x * 0.65f, view.getSize().y - fieldMarginPercent * view.getSize().y * 0.6f);
 		centerOrigin(minesLeftTitle);
 
-		minesLeft.setCharacterSize((uint)(fieldMargin * infoTextSizeFactor));
+		minesLeft.setCharacterSize((uint)(fieldMarginPercent * view.getSize().y * infoTextSizeFactor));
 		minesLeft.setString("0");		// for the origin
 		centerOrigin(minesLeft);
 		minesLeft.setString(numberToString(field.numberOfUndetectedMines()));
-		minesLeft.setPosition(minesLeftTitle.getGlobalBounds().left + minesLeftTitle.getGlobalBounds().width + 10.0f, 
-			view.getSize().y - fieldMargin * 0.6f);
+		minesLeft.setPosition(minesLeftTitle.getGlobalBounds().left + minesLeftTitle.getGlobalBounds().width + 0.02f * view.getSize().y, 
+			view.getSize().y - fieldMarginPercent * view.getSize().y * 0.6f);
 
 		playAgainText.setCharacterSize((uint)(std::min(view.getSize().x, view.getSize().y) * gameOverTextFactor * 0.5f));
 		playAgainText.setPosition(view.getSize().x * 0.5f, view.getSize().y * 0.4f);

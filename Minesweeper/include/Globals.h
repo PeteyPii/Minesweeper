@@ -15,8 +15,6 @@ const uint defaultFieldWidth = 16,	// default number of columns for a field
 	defaultWindowWidth = 512,
 	defualtWindowHeight = 512;
 
-const uint fieldMargin = 48;	// amount of space to have around the drawn field
-
 void centerOrigin(sf::Text& text);		// shifts text over so it is center aligned
 template <class T>
 std::string numberToString(T number)

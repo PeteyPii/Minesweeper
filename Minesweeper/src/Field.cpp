@@ -16,10 +16,10 @@ const unsigned char Field::hiddenChar = 35;
 const unsigned char Field::verticalDash = 186;
 const unsigned char Field::horizontalDash = 205;
 const unsigned char Field::marginSpacer = 249;
-const sf::Color Field::backgroundColour = sf::Color(190, 190, 255, 255);
+const sf::Color Field::backgroundColour = sf::Color(225, 225, 225, 255);
 const sf::Color Field::numberColours[] = {sf::Color(0, 0, 0, 0),	// 0
 	sf::Color(100, 100, 255, 255),	// 1
-	sf::Color(128, 255, 128, 255),	// 2
+	sf::Color(0, 192, 0, 255),		// 2
 	sf::Color(255, 40, 40, 255),	// 3
 	sf::Color(0, 0, 255, 255),		// 4				
 	sf::Color(128, 0, 128, 255),	// 5
@@ -29,6 +29,7 @@ const sf::Color Field::numberColours[] = {sf::Color(0, 0, 0, 0),	// 0
 	sf::Color(0, 0, 0, 0)};			// 9
 const sf::Color Field::hoverColour = sf::Color(255, 255, 255, 78);
 const sf::Color Field::clickedColour = sf::Color(0, 0, 0, 60);
+const float Field::nearbyMineNumberTextSizeFactor = 0.7f;
 
 Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, bool firstMoveZero)
 	: mines(fieldWidth, vector<bool>(fieldHeight, false)),
@@ -267,7 +268,7 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 			}
 
 			sf::FloatRect rect((float)x * areaSideLength + position.x, (float)y * areaSideLength + position.y, (float)areaSideLength, (float)areaSideLength);
-			drawRectangle(target, rect, sf::Color::Black);
+			drawRectangle(target, rect, sf::Color::White);
 		}
 
 	if(hover.getPosition().x >= position.x && hover.getPosition().x < position.x + fieldWidth * areaSideLength && 
@@ -282,8 +283,8 @@ void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool 
 		hover.setFillColor(hoverColour);
 	float rX = fmod(position.x, hover.getSize().x);
 	float rY = fmod(position.y, hover.getSize().y);
-	hover.setPosition((float)(((uint)mousePosition.x + (uint)rX) / (uint)hover.getSize().x * (uint)hover.getSize().x) - rX, 
-		(float)(((uint)mousePosition.y + (uint)rY) / (uint)hover.getSize().y * (uint)hover.getSize().y - rY));
+	hover.setPosition((float)((uint)(mousePosition.x - position.x) / (uint)hover.getSize().x * (uint)hover.getSize().x) + position.x, 
+		(float)((uint)(mousePosition.y - position.y) / (uint)hover.getSize().y * (uint)hover.getSize().y) + position.y);
 
 	for(uint x = 0; x < fieldWidth; ++x)
 		for(uint y = 0; y < fieldHeight; ++y)
@@ -353,8 +354,8 @@ void Field::generateField(int zeroAdjacentMinesLocationX, int zeroAdjacentMinesL
 	for(uint x = 0; x < fieldWidth; ++x)	// set up the nearby mine number text for every square
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
-			textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.squareFont, 20);
-			textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength + position.x, (y + 0.5f) * areaSideLength - 3 + position.y);
+			textNumbers[x][y] = sf::Text(numberToString(numberOfNearbyMines[x][y]), resources.squareFont, (uint)(nearbyMineNumberTextSizeFactor * areaSideLength));
+			textNumbers[x][y].setPosition((x + 0.5f) * areaSideLength - 0.025f * areaSideLength + position.x, (y + 0.5f) * areaSideLength - 0.18f * areaSideLength + position.y);
 			textNumbers[x][y].setColor(numberColours[numberOfNearbyMines[x][y]]);
 			centerOrigin(textNumbers[x][y]);
 		}
