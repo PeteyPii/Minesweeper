@@ -5,6 +5,7 @@
 
 #include "GameState.h"
 #include "MainMenuState.h"
+#include "SettingsState.h"
 #include "State.h"
 
 class MinesweeperApp
@@ -13,6 +14,7 @@ public:
 	sf::RenderWindow window;
 	bool keepRunning;
 	MainMenuState mainMenuState;
+	SettingsState settingsState;
 	GameState gameState;
 	State* currentState;
 

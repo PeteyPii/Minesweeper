@@ -93,6 +93,7 @@
     <ClCompile Include="src\Minesweeper.cpp" />
     <ClCompile Include="src\mtrand.cpp" />
     <ClCompile Include="src\Settings.cpp" />
+    <ClCompile Include="src\SettingsState.cpp" />
     <ClCompile Include="src\State.cpp" />
     <ClCompile Include="src\StreamInput.cpp" />
   </ItemGroup>
@@ -106,6 +107,7 @@
     <ClInclude Include="include\Globals.h" />
     <ClInclude Include="include\mtrand.h" />
     <ClInclude Include="include\Settings.h" />
+    <ClInclude Include="include\SettingsState.h" />
     <ClInclude Include="include\State.h" />
     <ClInclude Include="include\StreamInput.h" />
     <ClInclude Include="include\MinesweeperApp.h" />

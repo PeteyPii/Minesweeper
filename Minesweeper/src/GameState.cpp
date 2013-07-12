@@ -32,7 +32,7 @@ GameState::GameState()
 	timeElapsedTitle.setColor(sf::Color(140, 140, 140, 255));
 	minesLeftTitle = sf::Text("Mines left: ", resources.squareFont, 0);
 	minesLeftTitle.setColor(sf::Color(140, 140, 140, 255));
-	playAgainText = sf::Text("Press R to play again\n    (or double click)", resources.squareFont, 0);
+	playAgainText = sf::Text("Press R to play again\n     (or double click)", resources.squareFont, 0);
 	victoryText = sf::Text("You won!", resources.squareFont, 0);
 	defeatText = sf::Text("You lost...", resources.squareFont, 0);
 	backgroundShade.setFillColor(sf::Color(0, 0, 0, 128));
@@ -226,7 +226,7 @@ void GameState::updateStatsTexts()
 	if(numberOfWins > 0)
 	{
 		bestText << "Best time: " << Settings::getBestFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines);
-		averageText << "Average time: " << numberToString(Settings::getTotalFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines) / numberOfWins);
+		averageText << "Average win time: " << numberToString(Settings::getTotalFieldTime(field.fieldWidth, field.fieldHeight, field.numberOfMines) / numberOfWins);
 	}
 	else
 	{
@@ -240,15 +240,15 @@ void GameState::updateStatsTexts()
 	lastTimeText = sf::Text(timeText.str(), resources.squareFont, characterSize);
 	lastTimeText.setPosition(0.025f * view.getSize().x, 0.675f * view.getSize().y);
 	numberOfWinsText = sf::Text(winsText.str(), resources.squareFont, characterSize);
-	numberOfWinsText.setPosition(0.025f * view.getSize().x, 0.725f * view.getSize().y);
+	numberOfWinsText.setPosition(lastTimeText.getPosition().x, 0.725f * view.getSize().y);
 	numberOfGamesText = sf::Text(gamesText.str(), resources.squareFont, characterSize);
-	numberOfGamesText.setPosition(0.025f * view.getSize().x, 0.775f * view.getSize().y);
+	numberOfGamesText.setPosition(lastTimeText.getPosition().x, 0.775f * view.getSize().y);
 	winPercentageText = sf::Text(percentText.str(), resources.squareFont, characterSize);
-	winPercentageText.setPosition(0.025f * view.getSize().x, 0.825f * view.getSize().y);
+	winPercentageText.setPosition(lastTimeText.getPosition().x, 0.825f * view.getSize().y);
 	bestTimeText = sf::Text(bestText.str(), resources.squareFont, characterSize);
-	bestTimeText.setPosition(0.025f * view.getSize().x, 0.875f * view.getSize().y);
+	bestTimeText.setPosition(lastTimeText.getPosition().x, 0.875f * view.getSize().y);
 	averageTimeText = sf::Text(averageText.str(), resources.squareFont, characterSize);
-	averageTimeText.setPosition(0.025f * view.getSize().x, 0.925f * view.getSize().y);
+	averageTimeText.setPosition(lastTimeText.getPosition().x, 0.925f * view.getSize().y);
 }
 void GameState::newGame()
 {

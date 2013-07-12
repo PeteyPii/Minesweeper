@@ -10,10 +10,16 @@ public:
 
 	static void loadSettings();
 	static void saveSettings();
+	static void resetStatistics();
 
 	static unsigned int getFieldWidth();
 	static unsigned int getFieldHeight();
 	static unsigned int getNumberOfMines();
+
+	static void setFieldWidth(unsigned int fieldWidth);
+	static void setFieldHeight(unsigned int fieldWidth);
+	static void setNumberOfMines(unsigned int fieldWidth);
+
 	static unsigned int getWindowWidth();
 	static unsigned int getWindowHeight();
 

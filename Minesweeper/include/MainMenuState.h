@@ -10,7 +10,7 @@ class MainMenuState : public State
 public:
 	sf::Sprite background;
 	sf::Text title;
-	ClickableText playGame, exitGame;
+	ClickableText playGame, gameSettings, exitGame;
 	bool leftButtonDown;
 
 	MainMenuState();
@@ -26,5 +26,6 @@ public:
 	void updateButtons(sf::Vector2f mousePosition, bool isLeftDown);
 
 	void play();
+	void settings();
 	void exit();
 };

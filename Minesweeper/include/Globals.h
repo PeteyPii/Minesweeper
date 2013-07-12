@@ -13,7 +13,12 @@ const uint defaultFieldWidth = 16,	// default number of columns for a field
 	defaultFieldHeight = 16,		// default number of rows for a field
 	defaultNumberOfMines = 40,		// default number of mines for a field
 	defaultWindowWidth = 512,
-	defualtWindowHeight = 512;
+	defualtWindowHeight = 512,
+	minFieldWidth = 4,
+	maxFieldWidth = 50,
+	minFieldHeight = 4,
+	maxFieldHeight = 50;
+const float maxMineToFieldSquareRatio = 0.75f;
 
 void centerOrigin(sf::Text& text);		// shifts text over so it is center aligned
 template <class T>

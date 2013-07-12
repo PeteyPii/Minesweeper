@@ -8,7 +8,7 @@
 
 using namespace std;
 
-std::map<std::string, int> Settings::settings;
+map<string, int> Settings::settings;
 
 Settings::Settings()
 {
@@ -87,6 +87,26 @@ void Settings::saveSettings()
 		throw exception("Could not save settings");
 	}
 }
+void Settings::resetStatistics()
+{
+	map<string, int> newSettings;
+
+	newSettings.insert(*settings.find("fieldWidth"));
+	newSettings.insert(*settings.find("fieldHeight"));
+	newSettings.insert(*settings.find("numberOfMines"));
+	newSettings.insert(*settings.find("windowWidth"));
+	newSettings.insert(*settings.find("windowHeight"));
+
+	settings = newSettings;
+
+	ofstream settingsFile;
+	settingsFile.open("settings.txt");
+
+	settingsFile << endl;
+
+	saveSettings();
+	loadSettings();
+}
 uint Settings::getFieldWidth()
 {
 	return settings.find("fieldWidth")->second;
@@ -98,6 +118,21 @@ uint Settings::getFieldHeight()
 uint Settings::getNumberOfMines()
 {
 	return settings.find("numberOfMines")->second;
+}
+void Settings::setFieldWidth(unsigned int fieldWidth)
+{
+	settings["fieldWidth"] = fieldWidth;
+	saveSettings();
+}
+void Settings::setFieldHeight(unsigned int fieldWidth)
+{
+	settings["fieldheight"] = fieldWidth;
+	saveSettings();
+}
+void Settings::setNumberOfMines(unsigned int fieldWidth)
+{
+	settings["numberOfMines"] = fieldWidth;
+	saveSettings();
 }
 uint Settings::getWindowWidth()
 {

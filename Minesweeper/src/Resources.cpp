@@ -21,6 +21,8 @@ void Resources::loadResources()
 	mark.loadFromFile("resources/images/mark.png");
 	area.loadFromFile("resources/images/area.png");
 	invisibleButton.loadFromFile("resources/images/blank.png");
+	upButton.loadFromFile("resources/images/arrowUp.png");
+	downButton.loadFromFile("resources/images/arrowDown.png");
 
 	timesFont.loadFromFile("resources/fonts/times.ttf");
 	squareFont.loadFromFile("resources/fonts/Square.ttf");

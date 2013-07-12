@@ -5,7 +5,7 @@
 class Resources
 {
 public:
-	sf::Texture background, mine, mark, area, invisibleButton;
+	sf::Texture background, mine, mark, area, invisibleButton, upButton, downButton;
 	sf::Font timesFont, squareFont;
 
 	~Resources();
