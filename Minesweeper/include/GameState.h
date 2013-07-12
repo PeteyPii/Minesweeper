@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 
+#include "ClickableButton.h"
 #include "Field.h"
 #include "State.h"
 
@@ -27,6 +28,7 @@ public:
 	sf::Text playAgainText, victoryText, defeatText;
 	sf::Text lastTimeText, winPercentageText, numberOfWinsText, numberOfGamesText, bestTimeText, averageTimeText;
 	sf::RectangleShape backgroundShade;
+	ClickableButton screenButton;
 
 	GameState();
 	~GameState();

@@ -59,16 +59,17 @@ Field::Field(uint numberOfMines, uint fieldWidth, uint fieldHeight, bool firstMo
 	MinesweeperApp& app = MinesweeperApp::getInstance();
 	Resources& resources = Resources::getInstance();
 	uint areaSideLength = resources.area.getSize().y;
+	sf::Vector2f buttonSize((float)areaSideLength, (float)areaSideLength);
 
 	for(uint x = 0; x < fieldWidth; ++x)	// set up the buttons on every square
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
 			sf::Vector2f buttonPosition((float)x * areaSideLength, (float)y * areaSideLength);
-			sf::Vector2f buttonSize((float)areaSideLength, (float)areaSideLength);
+			
 			buttonsVisual[x][y] = ClickableButton(&resources.area, buttonPosition, buttonSize);
-			buttonsLMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
-			buttonsRMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
-			buttonsMMB[x][y] = ClickableButton(&resources.blank, buttonPosition, buttonSize);
+			buttonsLMB[x][y] = ClickableButton(&resources.invisibleButton, buttonPosition, buttonSize);
+			buttonsRMB[x][y] = ClickableButton(&resources.invisibleButton, buttonPosition, buttonSize);
+			buttonsMMB[x][y] = ClickableButton(&resources.invisibleButton, buttonPosition, buttonSize);
 
 			sf::Uint8 colour = (sf::Uint8)(255.0f * (0.6f + 0.4f * sqrt((float)(x * areaSideLength + y * areaSideLength)) / sqrt((float)(fieldWidth * areaSideLength + fieldHeight * areaSideLength + 2 * areaSideLength))));
 			buttonsVisual[x][y].sprite.setColor(sf::Color(colour, colour, colour, 255));
@@ -289,8 +290,11 @@ void Field::updateFieldClicks(sf::Vector2f mousePosition, bool isLeftDown, bool 
 	for(uint x = 0; x < fieldWidth; ++x)
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
-			if(buttonsLMB[x][y].updateAndGetClicked(mousePosition, isLeftDown))	// left click to reveal squares
+			Clickable::ClickType returnLMB =  buttonsLMB[x][y].updateAndGetClicked(mousePosition, isLeftDown);
+			if(returnLMB == Clickable::CLICKED)	// left click to reveal squares
 				revealSpot((int)x, (int)y);
+			else if(returnLMB == Clickable::DOUBLE_CLICKED)	// double click to clear around a square
+				clearUnmarkedArea(x, y);
 
 			if(buttonsRMB[x][y].updateAndGetClicked(mousePosition, isRightDown))	// right click to mark squares
 				markSpot(x, y);

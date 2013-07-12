@@ -32,7 +32,7 @@ GameState::GameState()
 	timeElapsedTitle.setColor(sf::Color(140, 140, 140, 255));
 	minesLeftTitle = sf::Text("Mines left: ", resources.squareFont, 0);
 	minesLeftTitle.setColor(sf::Color(140, 140, 140, 255));
-	playAgainText = sf::Text("Press R to play again", resources.squareFont, 0);
+	playAgainText = sf::Text("Press R to play again\n    (or double click)", resources.squareFont, 0);
 	victoryText = sf::Text("You won!", resources.squareFont, 0);
 	defeatText = sf::Text("You lost...", resources.squareFont, 0);
 	backgroundShade.setFillColor(sf::Color(0, 0, 0, 128));
@@ -99,16 +99,17 @@ void GameState::eventMouseMoved(sf::Event mouseEvent)
 }
 void GameState::eventMouseButtonPressed(sf::Event mouseEvent)
 {
+	if(mouseEvent.mouseButton.button == sf::Mouse::Left)
+		leftButtonDown = true;
+	else if(mouseEvent.mouseButton.button == sf::Mouse::Right)
+		rightButtonDown = true;
+	else if(mouseEvent.mouseButton.button == sf::Mouse::Middle)
+		middleButtonDown = true;
+
+	updateButtons(MinesweeperApp::getInstance().window.mapPixelToCoords(sf::Vector2i(mouseEvent.mouseButton.x, mouseEvent.mouseButton.y)), leftButtonDown, rightButtonDown, middleButtonDown);
+
 	if(inputReady && !isVictory && !isDefeat)
 	{
-		if(mouseEvent.mouseButton.button == sf::Mouse::Left)
-			leftButtonDown = true;
-		else if(mouseEvent.mouseButton.button == sf::Mouse::Right)
-			rightButtonDown = true;
-		else if(mouseEvent.mouseButton.button == sf::Mouse::Middle)
-			middleButtonDown = true;
-
-		updateButtons(MinesweeperApp::getInstance().window.mapPixelToCoords(sf::Vector2i(mouseEvent.mouseButton.x, mouseEvent.mouseButton.y)), leftButtonDown, rightButtonDown, middleButtonDown);
 		minesLeft.setString(numberToString(field.numberOfUndetectedMines()));
 
 		if(field.numberOfRevealedSpaces() != 0 && !gameBegan)
@@ -137,16 +138,17 @@ void GameState::eventMouseButtonPressed(sf::Event mouseEvent)
 }
 void GameState::eventMouseButtonReleased(sf::Event mouseEvent)
 {
+	if(mouseEvent.mouseButton.button == sf::Mouse::Left)
+		leftButtonDown = false;
+	else if(mouseEvent.mouseButton.button == sf::Mouse::Right)
+		rightButtonDown = false;
+	else if(mouseEvent.mouseButton.button == sf::Mouse::Middle)
+		middleButtonDown = false;
+
+	updateButtons(MinesweeperApp::getInstance().window.mapPixelToCoords(sf::Vector2i(mouseEvent.mouseButton.x, mouseEvent.mouseButton.y)), leftButtonDown, rightButtonDown, middleButtonDown);
+
 	if(inputReady && !isVictory && !isDefeat)
 	{
-		if(mouseEvent.mouseButton.button == sf::Mouse::Left)
-			leftButtonDown = false;
-		else if(mouseEvent.mouseButton.button == sf::Mouse::Right)
-			rightButtonDown = false;
-		else if(mouseEvent.mouseButton.button == sf::Mouse::Middle)
-			middleButtonDown = false;
-
-		updateButtons(MinesweeperApp::getInstance().window.mapPixelToCoords(sf::Vector2i(mouseEvent.mouseButton.x, mouseEvent.mouseButton.y)), leftButtonDown, rightButtonDown, middleButtonDown);
 		minesLeft.setString(numberToString(field.numberOfUndetectedMines()));
 
 		if(field.numberOfRevealedSpaces() != 0 && !gameBegan)
@@ -176,12 +178,13 @@ void GameState::eventMouseButtonReleased(sf::Event mouseEvent)
 void GameState::eventKeyPressed(sf::Event keyEvent)
 {
 	if(keyEvent.key.code == sf::Keyboard::Escape)
+	{
 		back();
+	}
 	else if(keyEvent.key.code == sf::Keyboard::R)
 	{
-		if(gameBegan && !isVictory && !isDefeat)
-			Settings::setNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines, Settings::getNumberOfFieldGames(field.fieldWidth, field.fieldHeight, field.numberOfMines) + 1);
-		newGame();
+		if(gameBegan)
+			newGame();
 	}
 }
 void GameState::eventMouseExited()
@@ -199,6 +202,8 @@ void GameState::eventWindowFocused()
 void GameState::updateButtons(sf::Vector2f mousePosition, bool isLeftDown, bool isRightDown, bool isMiddleDown)
 {
 	field.updateFieldClicks(mousePosition, isLeftDown, isRightDown, isMiddleDown);
+	if((isDefeat || isVictory) && screenButton.updateAndGetClicked(mousePosition, isLeftDown) == Clickable::DOUBLE_CLICKED)
+		newGame();
 }
 void GameState::updateStatsTexts()
 {
@@ -257,17 +262,20 @@ void GameState::newGame()
 		true);
 
 	MinesweeperApp& app = MinesweeperApp::getInstance();
+	Resources& resources = Resources::getInstance();
 	if(app.currentState == &app.gameState)
 	{
 		sf::View view;
-		view.setSize((float)field.fieldWidth * Resources::getInstance().area.getSize().y / (1.0f - 2.0f * fieldMarginPercent),
-			(float)field.fieldHeight * Resources::getInstance().area.getSize().y / (1.0f - 2.0f * fieldMarginPercent));
+		view.setSize((float)field.fieldWidth * resources.area.getSize().y / (1.0f - 2.0f * fieldMarginPercent),
+			(float)field.fieldHeight * resources.area.getSize().y / (1.0f - 2.0f * fieldMarginPercent));
 		view.setCenter(view.getSize().x * 0.5f,
 			view.getSize().y * 0.5f);
 		app.window.setView(view);
 
 		background.setScale(view.getSize().x / background.getTexture()->getSize().x, 
 			view.getSize().y / background.getTexture()->getSize().y);
+
+		screenButton = ClickableButton(&resources.invisibleButton, sf::Vector2f(0.0f, 0.0f), view.getSize());
 
 		field.setFieldPosition(fieldMarginPercent * view.getSize().x, fieldMarginPercent * view.getSize().y);
 		

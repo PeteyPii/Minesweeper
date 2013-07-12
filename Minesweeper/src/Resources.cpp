@@ -20,7 +20,7 @@ void Resources::loadResources()
 	mine.loadFromFile("resources/images/mine.png");
 	mark.loadFromFile("resources/images/mark.png");
 	area.loadFromFile("resources/images/area.png");
-	blank.loadFromFile("resources/images/blank.png");
+	invisibleButton.loadFromFile("resources/images/blank.png");
 
 	timesFont.loadFromFile("resources/fonts/times.ttf");
 	squareFont.loadFromFile("resources/fonts/Square.ttf");

@@ -1,5 +1,7 @@
 #include "Clickable.h"
 
+int Clickable::doubleClickTime = 250;
+
 Clickable::Clickable(sf::FloatRect rect)
 {
 	this->rect = rect;
@@ -9,51 +11,89 @@ Clickable::~Clickable()
 {
 
 }
-bool Clickable::updateAndGetClicked(sf::Vector2f mousePosition, bool isLeftDown)
+Clickable::ClickType Clickable::updateAndGetClicked(sf::Vector2f mousePosition, bool isLeftDown)
 {
-	if(rect.contains(mousePosition.x, mousePosition.y))	// Mouse is over the clicking area
+	if(rect.contains(mousePosition.x, mousePosition.y))	
 	{
-		if(wasClicked)
+		if(isLeftDown)
 		{
-			if(!isLeftDown)	// Clicked and released inside the clicking area
-			{
-				wasHovered = true;
-				wasClicked = false;
-				hovered();
-
-				return true;
-			}
-		}
-		else
-		{
-			if(isLeftDown)	// Clicked in the clicking area
+			if(!wasClicked)	
 			{
 				wasClicked = true;
 				clicked();
 			}
-			else if(!wasHovered)
+		}
+		else
+		{
+			if(wasClicked)
 			{
-				wasHovered = true;
-				hovered();
+				if(isClickReady)
+				{
+					wasClicked = false;
+					hovered();
+
+					if(doubleClicking && doubleClickTime != 0 && doubleClickTimer.restart().asMilliseconds() < doubleClickTime)
+					{
+						doubleClicking = false;
+						return DOUBLE_CLICKED;
+					}
+					else
+					{
+						if(doubleClickTime != 0)
+						{
+							doubleClicking = true;
+							doubleClickTimer.restart();
+						}
+						
+						return CLICKED;
+					}
+				}
+				else
+				{
+					wasClicked = false;
+					isClickReady = true;
+					hovered();
+				}
+			}
+			else
+			{
+				if(!wasInside)
+				{
+					hovered();
+				}
 			}
 		}
-	}
-	else	// Mouse is not over the clicking area
-	{
-		if(wasHovered || wasClicked)
-		{
-			wasClicked = false;
-			wasHovered = false;
-			unhovered();
-		}
 
+		wasInside = true;
+	}
+	else	
+	{
 		if(isLeftDown)
 		{
-			clickedOutside();
+			if(!wasClicked)
+			{
+				wasClicked = true;
+				isClickReady = false;
+			}
+		}
+		else
+		{
+			if(wasClicked)
+			{
+				wasClicked = false;
+				isClickReady = true;
+				clickedOutside();
+			}
+		}
+
+		if(wasInside)
+		{
+			wasInside = false;
+			unhovered();
 		}
 	}
 
-	return false;
+	return NO_CLICK;
 }
 void Clickable::unhovered()
 {
@@ -73,7 +113,9 @@ void Clickable::clickedOutside()
 }
 void Clickable::resetStates()
 {
+	doubleClicking = false;
 	wasClicked = false;
-	wasHovered = false;
+	wasInside = false;
+	isClickReady = true;
 	unhovered();
 }

@@ -8,6 +8,9 @@ MinesweeperApp::MinesweeperApp()
 	: window(sf::VideoMode(Settings::getWindowWidth(), Settings::getWindowHeight()), "Minesweeper")
 {
 	window.setFramerateLimit(60);
+	Resources& resources = Resources::getInstance();
+	sf::Image icon = resources.mine.copyToImage();
+	window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 	keepRunning = true;
 	currentState = &mainMenuState;
 }

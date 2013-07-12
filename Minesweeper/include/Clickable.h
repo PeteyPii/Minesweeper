@@ -6,12 +6,21 @@
 class Clickable
 {
 public:
+	enum ClickType
+	{
+		NO_CLICK = 0,
+		CLICKED,
+		DOUBLE_CLICKED
+	};
+
+	static int doubleClickTime;		// in milliseconds
+
 	sf::FloatRect rect;
 
 	Clickable(sf::FloatRect rect = sf::FloatRect(sf::Vector2f(0.0f, 0.0f), sf::Vector2f(0.0f, 0.0f)));
 	~Clickable();
 
-	virtual bool updateAndGetClicked(sf::Vector2f mousePosition, bool isLeftDown);
+	virtual ClickType updateAndGetClicked(sf::Vector2f mousePosition, bool isLeftDown);
 	virtual void unhovered();
 	virtual void hovered();
 	virtual void clicked();
@@ -19,6 +28,9 @@ public:
 	void resetStates();
 
 protected:
+	sf::Clock doubleClickTimer;
+	bool doubleClicking;
 	bool wasClicked;
-	bool wasHovered;
+	bool wasInside;
+	bool isClickReady;
 };
