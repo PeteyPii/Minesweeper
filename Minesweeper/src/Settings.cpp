@@ -126,7 +126,7 @@ void Settings::setFieldWidth(unsigned int fieldWidth)
 }
 void Settings::setFieldHeight(unsigned int fieldWidth)
 {
-	settings["fieldheight"] = fieldWidth;
+	settings["fieldHeight"] = fieldWidth;
 	saveSettings();
 }
 void Settings::setNumberOfMines(unsigned int fieldWidth)

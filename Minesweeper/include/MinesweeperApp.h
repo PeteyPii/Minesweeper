@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
@@ -13,9 +14,9 @@ class MinesweeperApp
 public:
 	sf::RenderWindow window;
 	bool keepRunning;
-	MainMenuState mainMenuState;
-	SettingsState settingsState;
-	GameState gameState;
+	std::auto_ptr<MainMenuState> mainMenuState;
+	std::auto_ptr<SettingsState> settingsState;
+	std::auto_ptr<GameState> gameState;
 	State* currentState;
 
 	~MinesweeperApp();

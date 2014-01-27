@@ -263,7 +263,7 @@ void GameState::newGame()
 
 	MinesweeperApp& app = MinesweeperApp::getInstance();
 	Resources& resources = Resources::getInstance();
-	if(app.currentState == &app.gameState)
+	if(app.currentState == app.gameState.get())
 	{
 		sf::View view;
 		view.setSize((float)field.fieldWidth * resources.area.getSize().y / (1.0f - 2.0f * fieldMarginPercent),
@@ -319,5 +319,5 @@ void GameState::back()
 {
 	MinesweeperApp& app = MinesweeperApp::getInstance();
 	app.window.setView(app.window.getDefaultView());
-	app.currentState = &app.mainMenuState;
+	app.currentState = app.mainMenuState.get();
 }

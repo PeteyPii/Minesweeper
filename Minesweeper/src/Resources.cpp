@@ -26,5 +26,18 @@ void Resources::loadResources()
 
 	timesFont.loadFromFile("resources/fonts/times.ttf");
 	squareFont.loadFromFile("resources/fonts/Square.ttf");
+
+	setSmooth(true);
+}
+
+void Resources::setSmooth(bool isSmooth)
+{
+	background.setSmooth(true);
+	mine.setSmooth(true);
+	mark.setSmooth(true);
+	area.setSmooth(true);
+	invisibleButton.setSmooth(true);
+	upButton.setSmooth(true);
+	downButton.setSmooth(true);
 }
 

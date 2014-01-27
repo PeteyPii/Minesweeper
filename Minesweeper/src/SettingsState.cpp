@@ -16,21 +16,21 @@ SettingsState::SettingsState()
 	Resources& resources = Resources::getInstance();
 
 	background = sf::Sprite(resources.background);
-	background.setScale((float)app.window.getSize().x / background.getTexture()->getSize().x, (float)app.window.getSize().y / background.getTexture()->getSize().y);
+	background.setScale((float)app.window.getView().getSize().x / background.getTexture()->getSize().x, (float)app.window.getView().getSize().y / background.getTexture()->getSize().y);
 
-	title = sf::Text("Game settings:", resources.squareFont, app.window.getSize().x / 12);
-	title.setPosition(0.025f * app.window.getSize().x, 0.0f * app.window.getSize().y);
+	title = sf::Text("Game settings:", resources.squareFont, app.window.getView().getSize().x / 12);
+	title.setPosition(0.025f * app.window.getView().getSize().x, 0.0f * app.window.getView().getSize().y);
 
 	applySettings = ClickableText("Apply settings", 
-		sf::Vector2f(0.75f * app.window.getSize().x, 0.95f * app.window.getSize().y), 
-		app.window.getSize().x / 24, 
+		sf::Vector2f(0.75f * app.window.getView().getSize().x, 0.95f * app.window.getView().getSize().y), 
+		app.window.getView().getSize().x / 24, 
 		&resources.squareFont);
 	centerOrigin(applySettings.text);
 	applySettings.updateBoundingBox();
 	
 	backToMenu = ClickableText("Back to main menu", 
-		sf::Vector2f(0.25f * app.window.getSize().x, 0.95f * app.window.getSize().y), 
-		app.window.getSize().x / 24, 
+		sf::Vector2f(0.25f * app.window.getView().getSize().x, 0.95f * app.window.getView().getSize().y), 
+		app.window.getView().getSize().x / 24, 
 		&resources.squareFont);
 	centerOrigin(backToMenu.text);
 	backToMenu.updateBoundingBox();
@@ -39,32 +39,32 @@ SettingsState::SettingsState()
 	fieldHeight = Settings::getFieldHeight();
 	numberOfMines = Settings::getNumberOfMines();
 
-	fieldWidthTitle = sf::Text("Field width:", resources.squareFont, app.window.getSize().x / 18);
-	fieldWidthTitle.setPosition(0.15f * app.window.getSize().x, 0.175f * app.window.getSize().y);
+	fieldWidthTitle = sf::Text("Field width:", resources.squareFont, app.window.getView().getSize().x / 18);
+	fieldWidthTitle.setPosition(0.15f * app.window.getView().getSize().x, 0.175f * app.window.getView().getSize().y);
 	fieldHeightTitle = sf::Text("Field height:", resources.squareFont, fieldWidthTitle.getCharacterSize());
-	fieldHeightTitle.setPosition(fieldWidthTitle.getPosition().x, 0.05f * app.window.getSize().y + fieldWidthTitle.getPosition().y);
+	fieldHeightTitle.setPosition(fieldWidthTitle.getPosition().x, 0.05f * app.window.getView().getSize().y + fieldWidthTitle.getPosition().y);
 	numberOfMinesTitle = sf::Text("Number of mines:", resources.squareFont, fieldWidthTitle.getCharacterSize());
-	numberOfMinesTitle.setPosition(fieldWidthTitle.getPosition().x, 0.1f * app.window.getSize().y + fieldWidthTitle.getPosition().y);
+	numberOfMinesTitle.setPosition(fieldWidthTitle.getPosition().x, 0.1f * app.window.getView().getSize().y + fieldWidthTitle.getPosition().y);
 
 	fieldWidthBG.setFillColor(sf::Color(0, 0, 0, 80));
 	fieldWidthBG.setOutlineThickness(0.0f);
-	fieldWidthBG.setSize(sf::Vector2f(0.15f * app.window.getSize().x, 0.045f * app.window.getSize().y));
-	fieldWidthBG.setPosition(sf::Vector2f(0.65f * app.window.getSize().x, 0.0125f * app.window.getSize().y + fieldWidthTitle.getPosition().y));
+	fieldWidthBG.setSize(sf::Vector2f(0.15f * app.window.getView().getSize().x, 0.045f * app.window.getView().getSize().y));
+	fieldWidthBG.setPosition(sf::Vector2f(0.65f * app.window.getView().getSize().x, 0.0125f * app.window.getView().getSize().y + fieldWidthTitle.getPosition().y));
 	fieldHeightBG.setFillColor(fieldWidthBG.getFillColor());
 	fieldHeightBG.setOutlineThickness(0.0f);
 	fieldHeightBG.setSize(fieldWidthBG.getSize());
-	fieldHeightBG.setPosition(sf::Vector2f(fieldWidthBG.getPosition().x, 0.0125f * app.window.getSize().y + fieldHeightTitle.getPosition().y));
+	fieldHeightBG.setPosition(sf::Vector2f(fieldWidthBG.getPosition().x, 0.0125f * app.window.getView().getSize().y + fieldHeightTitle.getPosition().y));
 	numberOfMinesBG.setFillColor(fieldWidthBG.getFillColor());
 	numberOfMinesBG.setOutlineThickness(0.0f);
 	numberOfMinesBG.setSize(fieldWidthBG.getSize());
-	numberOfMinesBG.setPosition(sf::Vector2f(fieldWidthBG.getPosition().x, 0.0125f * app.window.getSize().y + numberOfMinesTitle.getPosition().y));
+	numberOfMinesBG.setPosition(sf::Vector2f(fieldWidthBG.getPosition().x, 0.0125f * app.window.getView().getSize().y + numberOfMinesTitle.getPosition().y));
 
-	fieldWidthText = sf::Text(numberToString(fieldWidth), resources.squareFont, app.window.getSize().x / 20);
-	fieldWidthText.setPosition(sf::Vector2f(0.005f * app.window.getSize().x + fieldWidthBG.getPosition().x, -0.0075f * app.window.getSize().y + fieldWidthBG.getPosition().y));
+	fieldWidthText = sf::Text(numberToString(fieldWidth), resources.squareFont, app.window.getView().getSize().x / 20);
+	fieldWidthText.setPosition(sf::Vector2f(0.005f * app.window.getView().getSize().x + fieldWidthBG.getPosition().x, -0.0075f * app.window.getView().getSize().y + fieldWidthBG.getPosition().y));
 	fieldHeightText = sf::Text(numberToString(fieldHeight), resources.squareFont, fieldWidthText.getCharacterSize());
-	fieldHeightText.setPosition(sf::Vector2f(fieldWidthText.getPosition().x, -0.0075f * app.window.getSize().y + fieldHeightBG.getPosition().y));
+	fieldHeightText.setPosition(sf::Vector2f(fieldWidthText.getPosition().x, -0.0075f * app.window.getView().getSize().y + fieldHeightBG.getPosition().y));
 	numberOfMinesText = sf::Text(numberToString(numberOfMines), resources.squareFont, fieldWidthText.getCharacterSize());
-	numberOfMinesText.setPosition(sf::Vector2f(fieldWidthText.getPosition().x, -0.0075f * app.window.getSize().y + numberOfMinesBG.getPosition().y));
+	numberOfMinesText.setPosition(sf::Vector2f(fieldWidthText.getPosition().x, -0.0075f * app.window.getView().getSize().y + numberOfMinesBG.getPosition().y));
 
 	fieldWidthUpButton = ClickableButton(&resources.upButton,
 		sf::Vector2f(fieldWidthBG.getPosition().x + fieldWidthBG.getSize().x,
@@ -97,13 +97,13 @@ SettingsState::SettingsState()
 		sf::Vector2f(0.5f * numberOfMinesBG.getSize().y,
 		0.5f * numberOfMinesBG.getSize().y));
 
-	currentStatsTitle = sf::Text("Current statistics:", resources.squareFont, app.window.getSize().x / 24);
-	currentStatsTitle.setPosition(0.025f * app.window.getSize().x, 0.44f * app.window.getSize().y);
+	currentStatsTitle = sf::Text("Current statistics:", resources.squareFont, app.window.getView().getSize().x / 24);
+	currentStatsTitle.setPosition(0.025f * app.window.getView().getSize().x, 0.44f * app.window.getView().getSize().y);
 
 	updateStatsText();
 
-	howToResetAllStatsText = sf::Text("   Hold control, shift, and press\nthe R key to reset all statistics.", resources.squareFont, app.window.getSize().x / 24);
-	howToResetAllStatsText.setPosition(0.5f * app.window.getSize().x, 0.8125f * app.window.getSize().y);
+	howToResetAllStatsText = sf::Text("Hold control and shift, and press\nthe R key to reset all statistics.", resources.squareFont, app.window.getView().getSize().x / 24);
+	howToResetAllStatsText.setPosition(0.5f * app.window.getView().getSize().x, 0.8125f * app.window.getView().getSize().y);
 	centerOrigin(howToResetAllStatsText);
 
 	leftButtonDown = false;
@@ -294,28 +294,30 @@ void SettingsState::updateStatsText()
 		averageText << "Average time: N/A";
 	}
 
-	uint characterSize = app.window.getSize().x / 24;
+	uint characterSize = app.window.getView().getSize().x / 24;
 
 	numberOfWinsText = sf::Text(winsText.str(), resources.squareFont, characterSize);
-	numberOfWinsText.setPosition(0.05f * app.window.getSize().x, 0.5f * app.window.getSize().y);
+	numberOfWinsText.setPosition(0.05f * app.window.getView().getSize().x, 0.5f * app.window.getView().getSize().y);
 	numberOfGamesText = sf::Text(gamesText.str(), resources.squareFont, characterSize);
-	numberOfGamesText.setPosition(numberOfWinsText.getPosition().x, 0.54f * app.window.getSize().y);
+	numberOfGamesText.setPosition(numberOfWinsText.getPosition().x, 0.54f * app.window.getView().getSize().y);
 	winPercentageText = sf::Text(percentText.str(), resources.squareFont, characterSize);
-	winPercentageText.setPosition(numberOfWinsText.getPosition().x, 0.58f * app.window.getSize().y);
+	winPercentageText.setPosition(numberOfWinsText.getPosition().x, 0.58f * app.window.getView().getSize().y);
 	bestTimeText = sf::Text(bestText.str(), resources.squareFont, characterSize);
-	bestTimeText.setPosition(numberOfWinsText.getPosition().x, 0.62f * app.window.getSize().y);
+	bestTimeText.setPosition(numberOfWinsText.getPosition().x, 0.62f * app.window.getView().getSize().y);
 	averageTimeText = sf::Text(averageText.str(), resources.squareFont, characterSize);
-	averageTimeText.setPosition(numberOfWinsText.getPosition().x, 0.66f * app.window.getSize().y);
+	averageTimeText.setPosition(numberOfWinsText.getPosition().x, 0.66f * app.window.getView().getSize().y);
 }
 void SettingsState::apply()
 {
 	Settings::setFieldWidth(fieldWidth);
 	Settings::setFieldHeight(fieldHeight);
 	Settings::setNumberOfMines(numberOfMines);
+
+	updateStatsText();
 }
 void SettingsState::back()
 {
 	backToMenu.resetStates();
 	MinesweeperApp& app = MinesweeperApp::getInstance();
-	app.currentState = &app.mainMenuState;
+	app.currentState = app.mainMenuState.get();
 }

@@ -241,6 +241,10 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 {
 	target.draw(background);
 	uint areaSideLength = Resources::getInstance().area.getSize().y;
+
+	sf::Sprite mine(Resources::getInstance().mine);
+	sf::Sprite mark(Resources::getInstance().mark);
+
 	for(uint x = 0; x < fieldWidth; ++x)
 		for(uint y = 0; y < fieldHeight; ++y)
 		{
@@ -248,7 +252,6 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 			{
 				if(mines[x][y])
 				{
-					sf::Sprite mine(Resources::getInstance().mine);
 					mine.setPosition((float)x * areaSideLength + position.x, (float)y * areaSideLength + position.y);
 					target.draw(mine);
 				}
@@ -262,7 +265,7 @@ void Field::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 				target.draw(buttonsVisual[x][y]);
 				if(marked[x][y])
 				{
-					sf::Sprite mark(Resources::getInstance().mark);
+					
 					mark.setPosition((float)x * areaSideLength + position.x, (float)y * areaSideLength + position.y);
 					target.draw(mark);
 				}

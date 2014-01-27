@@ -12,29 +12,29 @@ MainMenuState::MainMenuState()
 	Resources& resources = Resources::getInstance();
 
 	background = sf::Sprite(resources.background);
-	background.setScale((float)app.window.getSize().x / background.getTexture()->getSize().x, (float)app.window.getSize().y / background.getTexture()->getSize().y);
+	background.setScale((float)app.window.getView().getSize().x / background.getTexture()->getSize().x, (float)app.window.getView().getSize().y / background.getTexture()->getSize().y);
 
-	title = sf::Text("Minesweeper", resources.squareFont, app.window.getSize().x / 9);
-	title.setPosition(0.5f * app.window.getSize().x, 0.15f * app.window.getSize().y);
+	title = sf::Text("Minesweeper", resources.squareFont, app.window.getView().getSize().x / 9);
+	title.setPosition(0.5f * app.window.getView().getSize().x, 0.15f * app.window.getView().getSize().y);
 	centerOrigin(title);
 
 	playGame = ClickableText("Play", 
-		sf::Vector2f(0.5f * app.window.getSize().x, 0.6f * app.window.getSize().y), 
-		app.window.getSize().x / 15, 
+		sf::Vector2f(0.5f * app.window.getView().getSize().x, 0.6f * app.window.getView().getSize().y), 
+		app.window.getView().getSize().x / 15, 
 		&resources.squareFont);
 	centerOrigin(playGame.text);
 	playGame.updateBoundingBox();
 	
 	gameSettings = ClickableText("Settings", 
-		sf::Vector2f(0.5f * app.window.getSize().x, 0.7f * app.window.getSize().y), 
-		app.window.getSize().x / 15, 
+		sf::Vector2f(0.5f * app.window.getView().getSize().x, 0.7f * app.window.getView().getSize().y), 
+		app.window.getView().getSize().x / 15, 
 		&resources.squareFont);
 	centerOrigin(gameSettings.text);
 	gameSettings.updateBoundingBox();
 
 	exitGame = ClickableText("Exit", 
-		sf::Vector2f(0.5f * app.window.getSize().x, 0.8f * app.window.getSize().y), 
-		app.window.getSize().x / 15, 
+		sf::Vector2f(0.5f * app.window.getView().getSize().x, 0.8f * app.window.getView().getSize().y), 
+		app.window.getView().getSize().x / 15, 
 		&resources.squareFont);
 	centerOrigin(exitGame.text);
 	exitGame.updateBoundingBox();
@@ -99,14 +99,14 @@ void MainMenuState::play()
 {
 	playGame.resetStates();
 	MinesweeperApp& app = MinesweeperApp::getInstance();
-	app.currentState = &app.gameState;
-	app.gameState.newGame();
+	app.currentState = app.gameState.get();
+	app.gameState->newGame();
 }
 void MainMenuState::settings()
 {
 	gameSettings.resetStates();
 	MinesweeperApp& app = MinesweeperApp::getInstance();
-	app.currentState = &app.settingsState;
+	app.currentState = app.settingsState.get();
 }
 void MainMenuState::exit()
 {

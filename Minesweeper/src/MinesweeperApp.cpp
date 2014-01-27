@@ -4,6 +4,8 @@
 #include "Resources.h"
 #include "Settings.h"
 
+using namespace std;
+
 MinesweeperApp::MinesweeperApp()
 	: window(sf::VideoMode(Settings::getWindowWidth(), Settings::getWindowHeight()), "Minesweeper")
 {
@@ -12,7 +14,6 @@ MinesweeperApp::MinesweeperApp()
 	sf::Image icon = resources.mine.copyToImage();
 	window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 	keepRunning = true;
-	currentState = &mainMenuState;
 }
 MinesweeperApp::~MinesweeperApp()
 {
@@ -26,6 +27,12 @@ MinesweeperApp& MinesweeperApp::getInstance()
 }
 void MinesweeperApp::begin()
 {
+	mainMenuState = auto_ptr<MainMenuState>(new MainMenuState());
+	settingsState = auto_ptr<SettingsState>(new SettingsState());
+	gameState = auto_ptr<GameState>(new GameState());
+
+	currentState = mainMenuState.get();
+
 	while(window.isOpen() && keepRunning)
 	{
 		sf::Event event;

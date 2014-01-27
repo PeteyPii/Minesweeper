@@ -11,6 +11,7 @@ public:
 	~Resources();
 
 	void loadResources();
+	void setSmooth(bool isSmooth);
 
 	static Resources& getInstance();
 	
